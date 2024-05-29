@@ -1,3 +1,9 @@
+
+//i here
+
+
+
+
 import * as React from 'react';
 import FormControl from '@mui/joy/FormControl';
 import FormLabel from '@mui/joy/FormLabel';
@@ -10,6 +16,12 @@ export default function InputSubscription() {
     text: '',
     status: 'initial',
   });
+
+  //console.log(data);
+
+  const inputData = () => {
+    console.log(data);
+  }
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -25,6 +37,7 @@ export default function InputSubscription() {
   };
 
   return (
+    <div className = 'form-token'>
     <form onSubmit={handleSubmit} id="demo">
       <FormControl>
         <FormLabel
@@ -39,20 +52,21 @@ export default function InputSubscription() {
           placeholder="Token"
           type="text"
           required
-          value={data.text}
-          onChange={(event) =>
-            setData({ text: event.target.value, status: 'initial' })
-          }
+          value={data.text} onChange = {(event) => setData(event.target.value)}
+          // onChange={(event) =>
+          //   setData({ text: event.target.value, status: 'initial' })
+          
           error={data.status === 'failure'}
           endDecorator={
             <Button
+            onClick = {inputData}
               variant="solid"
               color="primary"
               loading={data.status === 'loading'}
               type="submit"
               sx={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
             >
-              S
+              Send
             </Button>
           }
         />
@@ -73,9 +87,6 @@ export default function InputSubscription() {
         )}
       </FormControl>
     </form>
+    </div>
   );
 }
-
-
-
-//i here

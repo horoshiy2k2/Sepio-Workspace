@@ -89,6 +89,14 @@ export default function InputSubscription() {
     status: 'initial',
   });
 
+
+ const collectData = () => {
+  console.log(data);
+ } 
+
+
+
+
   const handleSubmit = (event) => {
     event.preventDefault();
     setData((current) => ({ ...current, status: 'loading' }));
@@ -103,6 +111,7 @@ export default function InputSubscription() {
   };
 
   return (
+    <div className = 'form-mapping'>
     <form onSubmit={handleSubmit} id="demo">
       <FormControl>
         <FormLabel
@@ -113,17 +122,19 @@ export default function InputSubscription() {
           Search MAC
         </FormLabel>
         <Input
-          sx={{ '--Input-decoratorChildHeight': '45px' }}
+          sx={{ '--Input-decoratorChildHeight': '45px'
+        }}
           placeholder="MAC"
           type="text"
           required
-          value={data.text}
-          onChange={(event) =>
-            setData({ text: event.target.value, status: 'initial' })
-          }
+          value={data.text} onChange = {(event) => setData(event.target.value)}
+          // onChange={(event) =>
+          //   setData({ text: event.target.value, status: 'initial' })
+          
           error={data.status === 'failure'}
           endDecorator={
             <Button
+            onClick = {collectData}
               variant="solid"
               color="primary"
               loading={data.status === 'loading'}
@@ -151,5 +162,6 @@ export default function InputSubscription() {
         )}
       </FormControl>
     </form>
+    </div>
   );
 }

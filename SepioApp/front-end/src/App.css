@@ -9,8 +9,20 @@
   text-align: center;
   /* color: white; */
   
+.form-logs {
+  margin-top: 40px
+}
 
 }
+.form-mapping {
+  margin-top: 40px;
+}
+
+.form-token {
+  margin-top: 40px;
+}
+
+
 
 .App-logo {
   height: 40vmin;
