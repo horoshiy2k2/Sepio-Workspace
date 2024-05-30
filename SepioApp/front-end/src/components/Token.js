@@ -66,7 +66,7 @@ export default function InputSubscription() {
               type="submit"
               sx={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
             >
-              Send
+              Sendd
             </Button>
           }
         />
