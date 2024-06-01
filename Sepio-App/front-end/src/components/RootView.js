@@ -50,7 +50,7 @@ export default function RootView() {
         }
     ];
 
-    const start = <img alt="logo" src="https://sepiocyber.com/wp-content/uploads/2022/10/Sepio_Cyber-logo.svg" height="40" className="mr-2" />;
+    const start = <img alt="logo" src="https://cdn.discordapp.com/attachments/641741231566618640/1246537643588714526/photo_2024-06-01_21-54-16.jpg?ex=665cc025&is=665b6ea5&hm=e1712ea8c1aa7d97a002cdd194c99339e1db96bbb8cbdeab7cd85c30db818a3b&" height="40" className="mr-2" />;
     const end = (
         <div className="flex align-items-center gap-2">
 
