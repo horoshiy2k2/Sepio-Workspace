@@ -11,14 +11,14 @@
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
   }
-}
+} 
 
-/* .sepio {
+ /* .sepio {
   display: flex;
   height:100vh; 
   background-image: url('image/NIST-Cybersecurity.jpg');
   background-size: cover;
-}  */
+}   */
 
 .App-header {
   background-color: #282c34;
@@ -42,4 +42,10 @@
   to {
     transform: rotate(360deg);
   }
-}
+} 
+
+
+
+
+
+
