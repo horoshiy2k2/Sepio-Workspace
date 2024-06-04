@@ -34,11 +34,11 @@ export default function Layout() {
 
     const end = (
         <div className='flex align-items-center gap-2'>
-                    <NavLink to='/' className='p-button p-component p-button-text' style={{  borderRadius: '10px', padding: '10px' }}>
+             <NavLink to='/' className='p-button p-component p-button-text' style={{  borderRadius: '10px', padding: '10px' }}>
                 <span className='pi pi-sign-out' style={{ marginRight: '5px' }} />
                 Logout
             </NavLink>
-          {/* <Button icon='pi pi-sign-out' label='Logout' style={{ backgroundColor: '#183462', borderColor: '#183462', marginRight: '10px', borderRadius: '10px' }} onClick={handleLogout} />   */}
+            {/* <Button icon='pi pi-sign-out' label='Logout' style={{ backgroundColor: '#183462', borderColor: '#183462', marginRight: '10px', borderRadius: '10px' }} onClick={handleLogout} /> */}
             <Avatar icon = 'pi pi-user' size = 'large' shape = 'circle'/>
         </div>
     );
@@ -75,19 +75,13 @@ export default function Layout() {
         </CSidebar>
 
 
-        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '-600px', top: '4px', marginRight: '-150px', height: '300px', width: '500px' }}>
-                <textarea 
-                    value={searchQuery} 
-                    onChange={(e) => setSearchQuery(e.target.value)} 
-                    placeholder="Logs:" 
-                    style={{ width: '100%', height: '100%', fontSize: '20px', padding: '10px', resize: 'none', overflow: 'auto', marginRight: '-1100px' }} 
-                />
+
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '-600px', top: '4px', marginRight: '-150px'}}>
+                <InputText value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search MAC" />
+                <Button icon='pi pi-search' onClick={handleSearch} style={{ marginLeft: '-1px' }} />
             </div>
-        {/* <div style={{ display: 'flex', justifyContent: 'center', marginTop: '-600px', top: '4px', marginRight: '-150px', height: '300px',fontSize: '40px'}}>
-                <InputText value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Logs:" />
-            </div> */}
-            <div style={{ display: 'flex', justifyContent: 'center', marginTop: '-350px', top: '4px', marginRight: '-150px'}}>
-    <h1>Logs</h1>
+            <div style={{ display: 'flex', justifyContent: 'center', marginTop: '-100px', top: '4px', marginRight: '-150px'}}>
+    <h1>Search MAC</h1>
 </div>
         </div>
     );
