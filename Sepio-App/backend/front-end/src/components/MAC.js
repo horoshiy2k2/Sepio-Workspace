@@ -356,7 +356,7 @@ export default function Layout() {
             {filteredMacAddresses.length > 0 && (
                 <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', marginRight: '-100px' }}>
                     <ul>
-                        {filteredMacAddresses.map((mac, index) => (
+                    {filteredMacAddresses.map((mac, index) => (
                             <li key={index} style={{
                                 listStyle: 'none',
                                 padding: '10px',
@@ -365,9 +365,17 @@ export default function Layout() {
                                 margin: '5px',
                                 backgroundColor: '#f0f0f0',
                                 display: 'flex',
-                                justifyContent: 'space-between'
+                                justifyContent: 'space-between',
+                                flexDirection: 'column',
+                                textAlign: 'left' // Align text to the left
                             }}>
-                                <span style={{ fontSize: '16px', fontWeight: 'bold' }}>{mac}</span>
+                                {typeof mac === 'string' ? (
+                                    <span style={{ fontSize: '16px', fontWeight: 'bold' }}>{mac}</span>
+                                ) : (
+                                    mac.map((item, subIndex) => (
+                                        <span key={subIndex} style={{ fontSize: '14px', color: '#666' }}>{item}</span>
+                                    ))
+                                )}
                                 <span style={{ fontSize: '14px', color: '#666' }}>MAC Address</span>
                             </li>
                         ))}
