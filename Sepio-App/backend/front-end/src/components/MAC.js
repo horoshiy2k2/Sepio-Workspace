@@ -283,16 +283,27 @@ export default function Layout() {
         navigate('/');
     }
 
-    const handleSearch = () => {
-        if (searchQuery === '') {
-            setFilteredMacAddresses([]);
-        } else {
-            const filtered = macAddresses.filter((mac) =>
-                mac.toLowerCase().includes(searchQuery.toLowerCase())
-            );
-            setFilteredMacAddresses(filtered);
+    const handlePostMac = async () => {
+        try {
+            const response = await axios.post('/api/mac-addresses', { macAddress: searchQuery });
+            console.log('POST response:', response.data);
+            setMacAddresses(response.data);
+            setFilteredMacAddresses(response.data);
+        } catch (error) {
+            console.error('Error posting MAC address:', error);
         }
     }
+
+    // const handleSearch = () => {
+    //     if (searchQuery === '') {
+    //         setFilteredMacAddresses([]);
+    //     } else {
+    //         const filtered = macAddresses.filter((mac) =>
+    //             mac.includes(searchQuery)
+    //         );
+    //         setFilteredMacAddresses(filtered);
+    //     }
+    // }
 
     const start = (
         <>
@@ -318,7 +329,7 @@ export default function Layout() {
                 <CSidebarNav>
                     <CContainer fluid>
                         <CForm className='d-flex'>
-                            {/* Additional form elements if needed */}
+                            {/*Place for additional form elements after demo*/}
                         </CForm>
                     </CContainer>
                     <CNavItem>
@@ -334,8 +345,13 @@ export default function Layout() {
             </CSidebar>
 
             <div style={{ display: 'flex', justifyContent: 'center', marginTop: '-600px', top: '4px', marginRight: '-150px' }}>
-                <InputText value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search MAC" />
-                <Button icon='pi pi-search' onClick={handleSearch} style={{ marginLeft: '10px' }} />
+                <InputText
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search MAC"
+                    style={{ width: `${(searchQuery.length < 45 ? 45 : searchQuery.length) * 8 + 20}px` }} // Adjusting width dynamically
+                />
+                <Button icon='pi pi-search' onClick={handlePostMac} style={{ marginLeft: '10px' }} />
             </div>
             {filteredMacAddresses.length > 0 && (
                 <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', marginRight: '-100px' }}>
