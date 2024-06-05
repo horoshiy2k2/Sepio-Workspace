@@ -335,6 +335,7 @@ export default function Layout() {
         fetchMacAddresses();
     }, []);
 
+<<<<<<< HEAD
     const handleSearch = () => {
         if (searchQuery === '') {
             setFilteredMacAddresses([]);
@@ -353,6 +354,20 @@ export default function Layout() {
         } else {
             setFilteredMacAddresses(filtered);
             setErrorMessageVisible(false);
+=======
+    const handleLogout = () => {
+        navigate('/');
+    }
+
+    const handlePostMac = async () => {
+        try {
+            const response = await axios.post('/api/mac-addresses', { macAddress: searchQuery });
+            console.log('POST response:', response.data);
+            setMacAddresses(response.data);
+            setFilteredMacAddresses(response.data);
+        } catch (error) {
+            console.error('Error posting MAC address:', error);
+>>>>>>> origin/main
         }
     };
 
@@ -363,6 +378,17 @@ export default function Layout() {
     const handleLogout = () => {
         navigate('/');
     };
+
+    // const handleSearch = () => {
+    //     if (searchQuery === '') {
+    //         setFilteredMacAddresses([]);
+    //     } else {
+    //         const filtered = macAddresses.filter((mac) =>
+    //             mac.includes(searchQuery)
+    //         );
+    //         setFilteredMacAddresses(filtered);
+    //     }
+    // }
 
     const start = (
         <img
@@ -387,6 +413,7 @@ export default function Layout() {
     return (
         <div>
             <Menubar start={start} end={end} />
+<<<<<<< HEAD
 
                         <CSidebar className='border-end custom-sidebar'>
                  <CSidebarNav>
@@ -398,6 +425,19 @@ export default function Layout() {
                    <CNavItem>
                          <NavLink to='/querytool/mac' className='nav-link'><RiDashboardLine className='nav-icon' /> MAC</NavLink>
                      </CNavItem>
+=======
+            
+            <CSidebar className='border-end custom-sidebar'>
+                <CSidebarNav>
+                    <CContainer fluid>
+                        <CForm className='d-flex'>
+                            {/*Place for additional form elements after demo*/}
+                        </CForm>
+                    </CContainer>
+                    <CNavItem>
+                        <NavLink to='/querytool/mac' className='nav-link'><RiDashboardLine className='nav-icon' /> MAC</NavLink>
+                    </CNavItem>
+>>>>>>> origin/main
                     <CNavItem>
                         <NavLink to='/querytool/logs' className='nav-link'><RiDashboardLine className='nav-icon' /> Logs</NavLink>
                     </CNavItem>
@@ -407,6 +447,7 @@ export default function Layout() {
                  </CSidebarNav>
             </CSidebar>
 
+<<<<<<< HEAD
 
             <Container>
                 <Box display="flex" justifyContent="center" alignItems="center" mt={2}>
@@ -453,6 +494,42 @@ export default function Layout() {
                                    
                                 </CardActions>
                             </Card>
+=======
+            <div style={{ display: 'flex', justifyContent: 'center', marginTop: '-600px', top: '4px', marginRight: '-150px' }}>
+                <InputText
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search MAC"
+                    style={{ width: `${(searchQuery.length < 45 ? 45 : searchQuery.length) * 8 + 20}px` }} // Adjusting width dynamically
+                />
+                <Button icon='pi pi-search' onClick={handlePostMac} style={{ marginLeft: '10px' }} />
+            </div>
+            {filteredMacAddresses.length > 0 && (
+                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', marginRight: '-100px' }}>
+                    <ul>
+                    {filteredMacAddresses.map((mac, index) => (
+                            <li key={index} style={{
+                                listStyle: 'none',
+                                padding: '10px',
+                                border: '1px solid #ccc',
+                                borderRadius: '5px',
+                                margin: '5px',
+                                backgroundColor: '#f0f0f0',
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                flexDirection: 'column',
+                                textAlign: 'left' // Align text to the left
+                            }}>
+                                {typeof mac === 'string' ? (
+                                    <span style={{ fontSize: '16px', fontWeight: 'bold' }}>{mac}</span>
+                                ) : (
+                                    mac.map((item, subIndex) => (
+                                        <span key={subIndex} style={{ fontSize: '14px', color: '#666' }}>{item}</span>
+                                    ))
+                                )}
+                                <span style={{ fontSize: '14px', color: '#666' }}></span>
+                            </li>
+>>>>>>> origin/main
                         ))}
                     </Box>
                 )}
