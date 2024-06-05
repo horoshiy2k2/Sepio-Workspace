@@ -376,7 +376,7 @@ export default function Layout() {
                                         <span key={subIndex} style={{ fontSize: '14px', color: '#666' }}>{item}</span>
                                     ))
                                 )}
-                                <span style={{ fontSize: '14px', color: '#666' }}>MAC Address</span>
+                                <span style={{ fontSize: '14px', color: '#666' }}></span>
                             </li>
                         ))}
                     </ul>
