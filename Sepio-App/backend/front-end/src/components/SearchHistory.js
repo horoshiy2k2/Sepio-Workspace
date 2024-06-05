@@ -1,5 +1,5 @@
-//import all dependencys
-import React from 'react';
+
+import React, {useState} from 'react';
 import {Menubar} from 'primereact/menubar';
 import {InputText} from 'primereact/badge';
 import {Avatar} from 'primereact/avatar';
@@ -10,16 +10,24 @@ import {RiDashboardLine, RiMenu2Line, RiDowloadCloud2Line, RiArrowDownSLine} fro
 import {NavLink} from 'react-router-dom';
 
 
+
 export default function Layout(){
 
+    const [macAddress, setMacAddress] = useState('');
+
+
     const navigate = useNavigate();
+
+    const handleStartClick = () => {
+        navigate('/querytool')
+    }
 
     const handleLogout = () => {
         navigate('/');
     }
 
     //image of menubar and stylind
-    const start = <img alt = 'logo' src = 'https://cdn.discordapp.com/attachments/641741231566618640/1246537643588714526/photo_2024-06-01_21-54-16.jpg?ex=665cc025&is=665b6ea5&hm=e1712ea8c1aa7d97a002cdd194c99339e1db96bbb8cbdeab7cd85c30db818a3b&' height = '40' className = 'mr-2'/>
+    const start = <img alt = 'logo' src = 'https://cdn.discordapp.com/attachments/641741231566618640/1246537643588714526/photo_2024-06-01_21-54-16.jpg?ex=665cc025&is=665b6ea5&hm=e1712ea8c1aa7d97a002cdd194c99339e1db96bbb8cbdeab7cd85c30db818a3b&' height = '40' className = 'mr-2' onClick={handleStartClick}/>
     const end = (
         <div className = 'flex align-items-center gap-2'>
              <NavLink to='/' className='p-button p-component p-button-text' style={{  borderRadius: '10px', padding: '10px' }}>
@@ -57,18 +65,49 @@ return (
                 </CNavItem>
             </CSidebarNav>
         </CSidebar>
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '-700px', top: '4px', marginRight: '-300px'}}>
+            <img alt = 'logo' src = 'https://cdn.discordapp.com/attachments/1229493252567203851/1247814454834368552/image.png?ex=66616545&is=666013c5&hm=70a935054a20b096b0cb8e31ad9017a2779ac3335a9965f5f341ce4f0f7a5379&' height = '40' className = 'mr-2'/>
+            
+           
+            </div>
+            <div className = 'content' style = {{padding: '20px', marginTop: '20px', maxWidth: '800px', margin: '0 auto', marginRight: '200px'}}>
+                <CForm>
+                <div>
+<label htmlFor = 'macAddress' style = {{color: '#183462'}}>MAC Address</label>
+<CFormInput
+placeholder = 'Enter MAC Address'
+value = {macAddress}
+onChange = {(e) => setMacAddress(e.target.value)}
+style = {{width: '100%'}}
+/>
+                </div>
+                <Button label = 'Search' icon = 'pi pi-search' style = {{backgroundColor: '#183462', borderColor: '183462', marginTop: '10px'}}/>
+                </CForm>
+                <div className = 'results' style = {{marginTop: '30px'}}>
 
-        <div>
-            <h1 style = {{ display: 'flex', justifyContent: 'center', marginTop: '-650px', top: '4px', marginRight: '-150px'}}>
-                Search History:
-            </h1>
-        </div>
+                </div>
 
-        
+            </div>
+
+
+            {/* write logic for  react-history-search here:*/}
         
     </div>
-    
+
 );
 }
 
 
+
+
+
+//this comonent need:
+
+//<div className="search-history-container"> {/* Wrap SearchHistory in a div */}
+{/* <SearchHistory
+  placeholder='Search MAC Address'
+  onSearch={handleSearch}
+  onChange={(value) => setMacAddress(value)}
+  historyKey='macAddressSearchHistory'
+  style={{ width: '100%' }}
+/> */}

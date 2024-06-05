@@ -42,12 +42,12 @@ return (
                     </CForm>
                 </CContainer>
                 <CNavItem>
-                <NavLink to = '/querytool/logs' className = 'nav-link'><RiDashboardLine className = 'nav-icon'/>Logs</NavLink>
+                <NavLink to = '/querytool/mac' className = 'nav-link'><RiDashboardLine className = 'nav-icon'/>MAC</NavLink>
 
                 </CNavItem>
-
+                
                 <CNavItem>
-                <NavLink to = '/querytool/mac' className = 'nav-link'><RiDashboardLine className = 'nav-icon'/> MAC</NavLink>
+                <NavLink to = '/querytool/logs' className = 'nav-link'><RiDashboardLine className = 'nav-icon'/>Logs</NavLink>
                 </CNavItem>
                 <CNavItem>
                     <NavLink to = '/querytool/searchhistory' className = 'nav-link'><RiDashboardLine className = 'nav-icon'/>SearchHistory</NavLink>
@@ -60,6 +60,3 @@ return (
     </div>
 );
 }
-
-
-//https://cdn.discordapp.com/attachments/641741231566618640/1247323914133311528/image.png?ex=665f9c6b&is=665e4aeb&hm=ba564e0b4faa081993fde8361d7f3e0bed24c1cb43829714a2ce333c54ef9e0d&
