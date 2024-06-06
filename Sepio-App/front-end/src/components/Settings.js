@@ -141,7 +141,7 @@ export default function Layout() {
       </div>
       <div style={{ display: 'flex', justifyContent: 'center', marginTop: '-800px', top: '4px', marginRight: '-300px' }}>
       </div>
-      <div style={{ marginTop: '30px', marginRight: '-5px' }}>
+      <div style={{ marginTop: '40px', marginRight: '-100px' }}>
         <h1>Settings:</h1>
       </div>
     </div>
