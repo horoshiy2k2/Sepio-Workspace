@@ -213,15 +213,16 @@ export default function Layout() {
   };
 
   const containerStyle = {
-    padding: "20px",
+    
     borderRadius: "8px",
     backgroundColor: "#f4f4f4",
-    maxWidth: "800px",
-    margin: "20px auto",
+    marginLeft: '250px',
+    maxWidth: "1300px",
+   
     fontFamily: "Arial, sans-serif",
     display: "flex",
     flexDirection: "column",
-    alignItems: "center",
+    
   };
 
   const logContainerStyle = {
@@ -231,7 +232,7 @@ export default function Layout() {
     maxWidth: "100%",
     maxHeight: "600px",
     marginTop: '-700px',
-    marginRight: '-300px',
+    marginRight: '-400px',
     overflowY: "auto",
     boxShadow: "0 0 10px rgba(0,0,0,0.1)",
     width: "100%",
@@ -312,7 +313,7 @@ export default function Layout() {
         </CSidebarNav>
       </CSidebar>
 
-      <div style={containerStyle}>
+      <div style = {containerStyle}>
         <div style={logContainerStyle}>
           <ul style={{ listStyleType: "none", padding: 0 }}>
             {logs.map((log, index) => (
