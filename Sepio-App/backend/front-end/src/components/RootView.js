@@ -53,6 +53,11 @@ return (
                 <CNavItem>
                     <NavLink to = '/querytool/searchhistory' className = 'nav-link'><RiDashboardLine className = 'nav-icon'/>SearchHistory</NavLink>
                 </CNavItem>
+
+                <CNavItem>
+
+                    <NavLink to = '/querytool/settings' className = 'nav-link'><RiDashboardLine className = 'nav-icon'/> Settings </NavLink>
+                </CNavItem>
             </CSidebarNav>
         </CSidebar>
         <div  style={{ display: 'flex', justifyContent: 'center', marginTop: '-600px', top: '4px', marginRight: '-150px'}}>

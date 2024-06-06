@@ -34,6 +34,10 @@ export default function Layout() {
         navigate('/');
     }
 
+    const handleStartClick = () => {
+        navigate('/querytool');
+      };
+
     const handlePostMac = async () => {
         try {
             const response = await axios.post('/api/mac-addresses', { macAddress: searchQuery });
@@ -47,7 +51,7 @@ export default function Layout() {
 
     const start = (
         <>
-            <img alt='logo' src={SepioLogo} height='40' className='mr-2' />
+            <img alt='logo' src={SepioLogo} height='40' className='mr-2' onClick = {handleStartClick} />
         </>
     );
 
@@ -81,6 +85,10 @@ export default function Layout() {
                     <CNavItem>
                         <NavLink to='/querytool/searchhistory' className='nav-link'><RiDashboardLine className='nav-icon' /> SearchHistory</NavLink>
                     </CNavItem>
+                    <CNavItem>
+
+                  <NavLink to = '/querytool/settings' className = 'nav-link'><RiDashboardLine className = 'nav-icon'/> Settings </NavLink>
+                  </CNavItem>
                 </CSidebarNav>
             </CSidebar>
 
@@ -89,9 +97,9 @@ export default function Layout() {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search MAC"
-                    style={{ width: `${(searchQuery.length < 45 ? 45 : searchQuery.length) * 8 + 20}px` }} // Adjusting width dynamically
+                    style={{ width: `${(searchQuery.length < 45 ? 45 : searchQuery.length) * 8 + 20}px`, minWidth: '600px' }} // Adjusting width dynamically
                 />
-                <Button icon='pi pi-search' onClick={handlePostMac} style={{ marginLeft: '10px' }} />
+                <Button label = 'Search' icon='pi pi-search' onClick={handlePostMac} style={{ backgroundColor: '#183462', borderColor: '183462', marginLeft: '-10px' }} />
             </div>
 				<div style={{ display: 'flex', justifyContent: 'center', marginTop: '-150px', top: '4px', marginRight: '-150px'}}>
 					<img alt = 'logo' src = {MacSearch} height = '40' className = 'mr-2'/>
@@ -139,3 +147,7 @@ export default function Layout() {
 		 
     );
 }
+
+
+
+
