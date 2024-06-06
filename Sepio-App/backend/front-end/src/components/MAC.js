@@ -83,7 +83,7 @@ export default function Layout() {
                         <NavLink to='/querytool/logs' className='nav-link'><RiDashboardLine className='nav-icon' /> Logs</NavLink>
                     </CNavItem>
                     <CNavItem>
-                        <NavLink to='/querytool/searchhistory' className='nav-link'><RiDashboardLine className='nav-icon' /> SearchHistory</NavLink>
+                        <NavLink to='/querytool/searchhistory' className='nav-link'><RiDashboardLine className='nav-icon' /> Search History</NavLink>
                     </CNavItem>
                     <CNavItem>
 

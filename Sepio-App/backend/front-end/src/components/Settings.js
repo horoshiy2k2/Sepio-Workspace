@@ -13,6 +13,7 @@ import SepioLogo from './../image/Sepio_Logo.png';
 import 'primereact/resources/themes/saga-blue/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
+import axios from 'axios';
 
 export default function Layout() {
   const [servicenowAddress, setServicenowAddress] = useState('');
@@ -31,10 +32,14 @@ export default function Layout() {
     navigate('/');
   };
 
-  const handleTestConnection = () => {
-    // Implement the test connection logic here
-    console.log('Test connection clicked');
-  };
+  const handleTestConnection = async () => {
+    try {
+        //const response = await axios.post('https://sepio-hac-1-ng.sepiocyber.com/prime/webui/Auth/LocalLogin', "{\n    \"username\": \"icloud\",\n    \"password\": \"Changecloud19\"\n}");
+        //console.log('POST response:', response.data);
+    } catch (error) {
+        console.error('Error posting MAC address:', error);
+    }
+}
 
   const start = (
     <img
@@ -136,7 +141,7 @@ export default function Layout() {
       </div>
       <div style={{ display: 'flex', justifyContent: 'center', marginTop: '-800px', top: '4px', marginRight: '-300px' }}>
       </div>
-      <div style={{ marginTop: '50px', marginRight: '-150px' }}>
+      <div style={{ marginTop: '30px', marginRight: '-5px' }}>
         <h1>Settings:</h1>
       </div>
     </div>

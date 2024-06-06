@@ -9,6 +9,7 @@ import {CSidebar, CSidebarNav, CNavTitle, CNavItem, CNGroup, CBadge, CSidebarTog
 import {RiDashboardLine, RiMenu2Line, RiDowloadCloud2Line, RiArrowDownSLine} from 'react-icons/ri';
 import { NavLink } from 'react-router-dom';
 import SepioLogo from './../image/Sepio_Logo.png'
+import SepioMainLogo from './../image/QueryTool.png'
 
 
 export default function Layout(){
@@ -61,7 +62,7 @@ return (
             </CSidebarNav>
         </CSidebar>
         <div  style={{ display: 'flex', justifyContent: 'center', marginTop: '-600px', top: '4px', marginRight: '-150px'}}>
-        <img src={SepioLogo} height='60' className='mr-2' />
+        <img src={SepioMainLogo} height='60' className='mr-2' />
         </div>
     </div>
 );
