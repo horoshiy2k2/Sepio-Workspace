@@ -1,103 +1,119 @@
-
-import React, {useState} from 'react';
-import {Menubar} from 'primereact/menubar';
-import {InputText} from 'primereact/badge';
-import {Avatar} from 'primereact/avatar';
-import {useNavigate} from 'react-router-dom';
-import {Button} from 'primereact/button';
-import {CSidebar, CSidebarNav, CNavTitle, CNavItem, CNGroup, CBadge, CSidebarToggler, CContainer, CForm, CFormInput, CButton} from '@coreui/react';
-import {RiDashboardLine, RiMenu2Line, RiDowloadCloud2Line, RiArrowDownSLine} from 'react-icons/ri';
+import React, { useState, useEffect } from 'react';
+import { Menubar } from 'primereact/menubar';
+import { Button } from 'primereact/button';
+import { useNavigate } from 'react-router-dom';
+import { InputText } from 'primereact/inputtext';
 import { NavLink } from 'react-router-dom';
+import { CSidebar, CSidebarNav, CNavItem, CContainer, CForm } from '@coreui/react';
+import { RiDashboardLine } from 'react-icons/ri';
+import { Avatar } from 'primereact/avatar';
+import axios from 'axios';
 import SepioLogo  from './../image/Sepio_Logo.png';
 import SearchLogo  from './../image/Search_History.png';
 
-
-
-export default function Layout(){
-
-    const [macAddress, setMacAddress] = useState('');
-
-
+ 
+export default function Layout() {
     const navigate = useNavigate();
+    const [searchQuery, setSearchQuery] = useState('');
+    const [macAddresses, setMacAddresses] = useState([]);
+    const [filteredMacAddresses, setFilteredMacAddresses] = useState([]);
 
-    const handleStartClick = () => {
-        navigate('/querytool')
-    }
+    useEffect(() => {
+        async function fetchMacAddresses() {
+            try {
+                const response = await axios.get('/api/mac-addresses');
+                setMacAddresses(response.data);
+                setFilteredMacAddresses([]);
+            } catch (error) {
+                console.error('Error fetching MAC addresses:', error);
+            }
+        }
+        fetchMacAddresses();
+    }, []);
 
     const handleLogout = () => {
         navigate('/');
     }
 
-    //image of menubar and stylind
-    const start = <img alt = 'logo' src = {SepioLogo} height = '40' className = 'mr-2' onClick={handleStartClick}/>
+    const handleStartClick = () => {
+        navigate('/querytool');
+      };
+
+    const handlePostMac = async () => {
+        try {
+            const response = await axios.post('/api/mac-addresses', { macAddress: searchQuery });
+            console.log('POST response:', response.data);
+            setMacAddresses(response.data);
+            setFilteredMacAddresses(response.data);
+        } catch (error) {
+            console.error('Error posting MAC address:', error);
+        }
+    }
+
+    const start = (
+        <>
+            <img alt='logo' src={SepioLogo} height='40' className='mr-2' onClick = {handleStartClick} />
+        </>
+    );
+
     const end = (
-        <div className = 'flex align-items-center gap-2'>
-             <NavLink to='/' className='p-button p-component p-button-text' style={{  borderRadius: '10px', padding: '10px' }}>
+        <div className='flex align-items-center gap-2'>
+            <NavLink to='/' className='p-button p-component p-button-text' style={{ borderRadius: '10px', padding: '10px' }}>
                 <span className='pi pi-sign-out' style={{ marginRight: '5px' }} />
                 Logout
             </NavLink>
-            {/* styling for all components: style{} */}
-            {/* <Button icon = 'pi pi-sign-out' label = 'Logout' style = {{backgroundColor: '#183462', borderColor: '#183462', marginRight: '10px', borderRadius: '10px'}} onClick = {handleLogout}/> */}
-            <Avatar icon = 'pi pi-user' size = 'large' shape = 'circle'/>
+            <Avatar icon='pi pi-user' size='large' shape='circle' />
         </div>
     );
 
-return (
-    <div>
-        <Menubar start = {start} end = {end}/>
-        <CSidebar className = 'border-end custom-sidebar'>
-            <CSidebarNav>
-                <CContainer fluid>
-                    <CForm className = 'd-flex'>
-                        {/* <CFormInput type = 'search' className = 'search-item me-2' placeholder = 'Search'/>
-                        <CButton type = 'submit' variant = 'outline' style = {{backgroundColor: '#183462', color: '#fff'}}>
-                            Search
-                        </CButton> */}
-                    </CForm>
-                </CContainer>
-                <CNavItem>
-                <NavLink to = '/querytool/mac' className = 'nav-link'><RiDashboardLine className = 'nav-icon'/> MAC</NavLink>
-                </CNavItem>
+    return (
+        <div>
+            <Menubar start={start} end={end} />
 
-                <CNavItem>
-                <NavLink to = '/querytool/logs' className = 'nav-link'><RiDashboardLine className = 'nav-icon'/>Logs</NavLink>
-                </CNavItem>
-                <CNavItem>
-                    <NavLink to = '/querytool/searchhistory' className = 'nav-link'><RiDashboardLine className = 'nav-icon'/>SearchHistory</NavLink>
-                </CNavItem>
-            </CSidebarNav>
-		</CSidebar>
-		
-        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '-700px', top: '4px', marginRight: '-300px'}}>
-            <img alt = 'logo' src = {SearchLogo} height = '40' className = 'mr-2'/>
-            
-           
+            <CSidebar className='border-end custom-sidebar'>
+                <CSidebarNav>
+                    <CContainer fluid>
+                        <CForm className='d-flex'>
+                            {/*Place for additional form elements after demo*/}
+                        </CForm>
+                    </CContainer>
+                    <CNavItem>
+                        <NavLink to='/querytool/mac' className='nav-link'><RiDashboardLine className='nav-icon' /> MAC</NavLink>
+                    </CNavItem>
+                    <CNavItem>
+                        <NavLink to='/querytool/logs' className='nav-link'><RiDashboardLine className='nav-icon' /> Logs</NavLink>
+                    </CNavItem>
+                    <CNavItem>
+                        <NavLink to='/querytool/searchhistory' className='nav-link'><RiDashboardLine className='nav-icon' /> SearchHistory</NavLink>
+                    </CNavItem>
+                    <CNavItem>
+
+                  <NavLink to = '/querytool/settings' className = 'nav-link'><RiDashboardLine className = 'nav-icon'/> Settings </NavLink>
+                  </CNavItem>
+                </CSidebarNav>
+            </CSidebar>
+
+            <div style={{ display: 'flex', justifyContent: 'center', marginTop: '-600px', top: '4px', marginRight: '-150px' }}>
+                <InputText
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search MAC"
+                    style={{ width: `${(searchQuery.length < 45 ? 45 : searchQuery.length) * 8 + 20}px`, minWidth: '600px' }} // Adjusting width dynamically
+                />
+                <Button label = 'Search' icon='pi pi-search' onClick={handlePostMac} style={{ backgroundColor: '#183462', borderColor: '183462', marginLeft: '-10px' }} />
             </div>
-            <div className = 'content' style = {{padding: '20px', marginTop: '20px', maxWidth: '800px', margin: '0 auto', marginRight: '400px'}}>
-                <CForm style={{display:'flex', justifyContent:'center', alignItems:'center'}}>
-                <div>
-							<CFormInput
-							placeholder = 'Enter MAC Address'
-							value = {macAddress}
-							onChange = {(e) => setMacAddress(e.target.value)}
-							style = {{width: '100%' }}
-							/>
-                </div>
-				<Button label='Search' icon='pi pi-search' style={{ backgroundColor: '#183462', borderColor: '183462', marginLeft:'20px' ,borderRadius:'7px'}}/>
-                </CForm>
-                <div className = 'results' style = {{marginTop: '30px'}}>
+				<div style={{ display: 'flex', justifyContent: 'center', marginTop: '-150px', top: '4px', marginRight: '-150px'}}>
+					<img alt = 'logo' src = {SearchLogo} height = '40' className = 'mr-2'/>
+				</div>
+            {filteredMacAddresses.length > 0 && (
+                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', marginRight: '-100px', width: '100%' }}>
 
                 </div>
-
-			</div>
-		
-
-
-            {/* write logic for  react-history-search here:*/}
-        
-    </div>
-
-);
+            )}
+		 </div>
+		 
+		 
+    );
 }
 
 
@@ -114,3 +130,11 @@ return (
   historyKey='macAddressSearchHistory'
   style={{ width: '100%' }}
 /> */}
+
+
+
+
+
+
+
+
