@@ -8,6 +8,8 @@ import { CSidebar, CSidebarNav, CNavItem, CContainer, CForm } from '@coreui/reac
 import { RiDashboardLine } from 'react-icons/ri';
 import { Avatar } from 'primereact/avatar';
 import axios from 'axios';
+import SepioLogo  from './../image/Sepio_Logo.png';
+import MacSearch  from './../image/Mac_Search.png';
 
 export default function Layout() {
     const navigate = useNavigate();
@@ -45,7 +47,7 @@ export default function Layout() {
 
     const start = (
         <>
-            <img alt='logo' src='https://cdn.discordapp.com/attachments/641741231566618640/1246537643588714526/photo_2024-06-01_21-54-16.jpg?ex=665cc025&is=665b6ea5&hm=e1712ea8c1aa7d97a002cdd194c99339e1db96bbb8cbdeab7cd85c30db818a3b&' height='40' className='mr-2' />
+            <img alt='logo' src={SepioLogo} height='40' className='mr-2' />
         </>
     );
 
@@ -91,17 +93,19 @@ export default function Layout() {
                 />
                 <Button icon='pi pi-search' onClick={handlePostMac} style={{ marginLeft: '10px' }} />
             </div>
-
+				<div style={{ display: 'flex', justifyContent: 'center', marginTop: '-150px', top: '4px', marginRight: '-150px'}}>
+					<img alt = 'logo' src = {MacSearch} height = '40' className = 'mr-2'/>
+				</div>
             {filteredMacAddresses.length > 0 && (
-                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', marginRight: '-100px', width: '80%' }}>
-                    <table className="table table-striped">
+                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', marginRight: '-100px', width: '100%' }}>
+                    <table className="table table-striped" style = {{ position: 'absolute', top:'55%', left: '30%', width:'50%'}}>
                         <thead>
                             <tr>
                                 <th>MAC Address Status</th>
                                 <th>MAC locations</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody  >
                             {filteredMacAddresses.map((mac, index) => {
                                 if (typeof mac === 'string') { 
                                     if (mac.indexOf("No record") >= 0) {
@@ -130,6 +134,8 @@ export default function Layout() {
                     </table>
                 </div>
             )}
-        </div>
+		 </div>
+		 
+		 
     );
 }

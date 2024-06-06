@@ -7,7 +7,8 @@ import {useNavigate} from 'react-router-dom';
 import {Button} from 'primereact/button';
 import {CSidebar, CSidebarNav, CNavTitle, CNavItem, CNGroup, CBadge, CSidebarToggler, CContainer, CForm, CFormInput, CButton} from '@coreui/react';
 import {RiDashboardLine, RiMenu2Line, RiDowloadCloud2Line, RiArrowDownSLine} from 'react-icons/ri';
-import {NavLink} from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
+import SepioLogo from './../image/Sepio_Logo.png'
 
 
 export default function Layout(){
@@ -19,7 +20,7 @@ export default function Layout(){
     }
 
     //image of menubar and stylind
-    const start = <img alt = 'logo' src = 'https://cdn.discordapp.com/attachments/641741231566618640/1246537643588714526/photo_2024-06-01_21-54-16.jpg?ex=665cc025&is=665b6ea5&hm=e1712ea8c1aa7d97a002cdd194c99339e1db96bbb8cbdeab7cd85c30db818a3b&' height = '40' className = 'mr-2'/>
+    const start = <img alt = 'logo' src = {SepioLogo} height = '40' className = 'mr-2'/>
     const end = (
         <div className = 'flex align-items-center gap-2'>
             {/* styling for all components: style{} */}
@@ -55,7 +56,7 @@ return (
             </CSidebarNav>
         </CSidebar>
         <div  style={{ display: 'flex', justifyContent: 'center', marginTop: '-600px', top: '4px', marginRight: '-150px'}}>
-        <img src='https://cdn.discordapp.com/attachments/641741231566618640/1247323914133311528/image.png?ex=665f9c6b&is=665e4aeb&hm=ba564e0b4faa081993fde8361d7f3e0bed24c1cb43829714a2ce333c54ef9e0d&' height='60' className='mr-2' />
+        <img src={SepioLogo} height='60' className='mr-2' />
         </div>
     </div>
 );

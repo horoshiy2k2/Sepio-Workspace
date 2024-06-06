@@ -170,6 +170,8 @@ import { CSidebar, CSidebarNav, CNavItem, CContainer, CForm, CButton } from '@co
 import { RiDashboardLine } from 'react-icons/ri';
 import { Avatar } from 'primereact/avatar';
 import { logger } from 'react-native-logs';
+import SepioLogo from './../image/Sepio_Logo.png';
+import LogsLogo from './../image/Logs.png';
 
 export default function Layout() {
   const [logs, setLogs] = useState(() => {
@@ -269,7 +271,7 @@ export default function Layout() {
 
   const start = (
     <>
-      <img alt='logo' src='https://cdn.discordapp.com/attachments/641741231566618640/1246537643588714526/photo_2024-06-01_21-54-16.jpg?ex=665cc025&is=665b6ea5&hm=e1712ea8c1aa7d97a002cdd194c99339e1db96bbb8cbdeab7cd85c30db818a3b&' height='40' className='mr-2' onClick={handleStartClick} />
+      <img alt='logo' src={SepioLogo} height='40' className='mr-2' onClick={handleStartClick} />
     </>
   );
 
@@ -319,7 +321,7 @@ export default function Layout() {
       </div>
 
 <div style={{ display: 'flex', justifyContent: 'center', marginTop: '-800px', top: '4px', marginRight: '-300px'}}>
-<img alt = 'logo' src = 'https://media.discordapp.net/attachments/1229493252567203851/1247814234079887401/image.png?ex=66616510&is=66601390&hm=45e62934d422a6d96434962eb538ba435a6b324a5c53e461647a3a8e092c709c&=&format=webp&quality=lossless&width=550&height=178' height = '40' className = 'mr-2'/>
+<img alt = 'logo' src = {LogsLogo} height = '40' className = 'mr-2'/>
 </div>
 
     </div>

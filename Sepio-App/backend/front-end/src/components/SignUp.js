@@ -5,6 +5,7 @@ import FormHelperText from '@mui/joy/FormHelperText';
 import Input from '@mui/joy/Input';
 import Button from '@mui/joy/Button';
 import { useNavigate } from 'react-router-dom';
+import SepioLogo  from './../image/Sepio_Logo.png';
 
 export default function InputSubscription() {
   const navigate = useNavigate();
@@ -38,7 +39,7 @@ export default function InputSubscription() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', background: '#778899', padding: '40px', borderRadius: '10px', maxWidth: '400px', margin: 'auto', marginTop: '100px' }}>
-      <img src= "https://cdn.discordapp.com/attachments/641741231566618640/1246537643588714526/photo_2024-06-01_21-54-16.jpg?ex=665cc025&is=665b6ea5&hm=e1712ea8c1aa7d97a002cdd194c99339e1db96bbb8cbdeab7cd85c30db818a3b&" alt="Welcome" style={{ marginBottom: '20px', height: 70 }} />
+      <img src= {SepioLogo} alt="Welcome" style={{ marginBottom: '20px', height: 70 }} />
       <div className='form-token'>
         <form onSubmit={handleSubmit} id="demo">
           <FormControl>

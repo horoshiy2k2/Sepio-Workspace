@@ -7,7 +7,9 @@ import {useNavigate} from 'react-router-dom';
 import {Button} from 'primereact/button';
 import {CSidebar, CSidebarNav, CNavTitle, CNavItem, CNGroup, CBadge, CSidebarToggler, CContainer, CForm, CFormInput, CButton} from '@coreui/react';
 import {RiDashboardLine, RiMenu2Line, RiDowloadCloud2Line, RiArrowDownSLine} from 'react-icons/ri';
-import {NavLink} from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
+import SepioLogo  from './../image/Sepio_Logo.png';
+import SearchLogo  from './../image/Search_History.png';
 
 
 
@@ -27,7 +29,7 @@ export default function Layout(){
     }
 
     //image of menubar and stylind
-    const start = <img alt = 'logo' src = 'https://cdn.discordapp.com/attachments/641741231566618640/1246537643588714526/photo_2024-06-01_21-54-16.jpg?ex=665cc025&is=665b6ea5&hm=e1712ea8c1aa7d97a002cdd194c99339e1db96bbb8cbdeab7cd85c30db818a3b&' height = '40' className = 'mr-2' onClick={handleStartClick}/>
+    const start = <img alt = 'logo' src = {SepioLogo} height = '40' className = 'mr-2' onClick={handleStartClick}/>
     const end = (
         <div className = 'flex align-items-center gap-2'>
              <NavLink to='/' className='p-button p-component p-button-text' style={{  borderRadius: '10px', padding: '10px' }}>
@@ -64,30 +66,31 @@ return (
                     <NavLink to = '/querytool/searchhistory' className = 'nav-link'><RiDashboardLine className = 'nav-icon'/>SearchHistory</NavLink>
                 </CNavItem>
             </CSidebarNav>
-        </CSidebar>
+		</CSidebar>
+		
         <div style={{ display: 'flex', justifyContent: 'center', marginTop: '-700px', top: '4px', marginRight: '-300px'}}>
-            <img alt = 'logo' src = 'https://cdn.discordapp.com/attachments/1229493252567203851/1247814454834368552/image.png?ex=66616545&is=666013c5&hm=70a935054a20b096b0cb8e31ad9017a2779ac3335a9965f5f341ce4f0f7a5379&' height = '40' className = 'mr-2'/>
+            <img alt = 'logo' src = {SearchLogo} height = '40' className = 'mr-2'/>
             
            
             </div>
-            <div className = 'content' style = {{padding: '20px', marginTop: '20px', maxWidth: '800px', margin: '0 auto', marginRight: '200px'}}>
-                <CForm>
+            <div className = 'content' style = {{padding: '20px', marginTop: '20px', maxWidth: '800px', margin: '0 auto', marginRight: '400px'}}>
+                <CForm style={{display:'flex', justifyContent:'center', alignItems:'center'}}>
                 <div>
-<label htmlFor = 'macAddress' style = {{color: '#183462'}}>MAC Address</label>
-<CFormInput
-placeholder = 'Enter MAC Address'
-value = {macAddress}
-onChange = {(e) => setMacAddress(e.target.value)}
-style = {{width: '100%'}}
-/>
+							<CFormInput
+							placeholder = 'Enter MAC Address'
+							value = {macAddress}
+							onChange = {(e) => setMacAddress(e.target.value)}
+							style = {{width: '100%' }}
+							/>
                 </div>
-                <Button label = 'Search' icon = 'pi pi-search' style = {{backgroundColor: '#183462', borderColor: '183462', marginTop: '10px'}}/>
+				<Button label='Search' icon='pi pi-search' style={{ backgroundColor: '#183462', borderColor: '183462', marginLeft:'20px' ,borderRadius:'7px'}}/>
                 </CForm>
                 <div className = 'results' style = {{marginTop: '30px'}}>
 
                 </div>
 
-            </div>
+			</div>
+		
 
 
             {/* write logic for  react-history-search here:*/}
