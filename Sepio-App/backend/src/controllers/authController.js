@@ -1,8 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { MySQLUser } = require('../models');
-const JWT_SECRET = 'your_jwt_secret'; // Set your JWT secret
-
+const JWT_SECRET = ''; 
 exports.register = async (req, res) => {
     const { username, password, role } = req.body;
 
