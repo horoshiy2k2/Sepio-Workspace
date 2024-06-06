@@ -84,11 +84,9 @@ export default function Layout() {
             </CNavItem>
           </CSidebarNav>
         </CSidebar>
-        <div style={{marginTop: '100px'}}>
-          <div >
-            <div style={{ marginLeft: '400px' }}>
-              <h2>ServiceNow Credentials</h2>
-            
+        <div style={{ marginTop: '100px', marginLeft: '400px' }}>
+          <div>
+            <h3>ServiceNow Credentials</h3>
             <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '20px' }}>
               <InputText
                 value={servicenowAddress}
@@ -109,8 +107,8 @@ export default function Layout() {
                 style={{ width: '100%', maxWidth: '380px', marginBottom: '10px' }}
               />
             </div>
-            <div style={{ marginLeft: '0' }}>
-              <h2>Sepio Credentials</h2>
+            <div>
+              <h3>Sepio Credentials</h3>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '20px' }}>
               <InputText
@@ -131,11 +129,15 @@ export default function Layout() {
                 placeholder="Sepio User Password"
                 style={{ width: '100%', maxWidth: '380px', marginBottom: '10px' }}
               />
-              </div>
             </div>
-            <Button label="Test Connection" icon="pi pi-check" onClick={handleTestConnection} style={{ backgroundColor: '#183462', borderColor: '183462', marginLeft: '400px' }} />
           </div>
+          <Button label="Test Connection" icon="pi pi-check" onClick={handleTestConnection} style={{ backgroundColor: '#183462', borderColor: '183462' }} />
         </div>
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '-800px', top: '4px', marginRight: '-300px' }}>
+      </div>
+      <div style={{ marginTop: '50px', marginRight: '-150px' }}>
+        <h1>Settings:</h1>
       </div>
     </div>
   );

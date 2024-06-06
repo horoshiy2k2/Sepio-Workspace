@@ -325,8 +325,15 @@ export default function Layout() {
         </div>
       </div>
 
-<div style={{ display: 'flex', justifyContent: 'center', marginTop: '-800px', top: '4px', marginRight: '-300px'}}>
+{/* <div style={{ display: 'flex', justifyContent: 'center', marginTop: '-800px', top: '4px', marginRight: '-300px'}}>
 <img alt = 'logo' src = {LogsLogo} height = '40' className = 'mr-2'/>
+</div> */}
+
+
+<div style = {{marginTop: '-750px', marginRight: '-200px'}}>
+<h1>
+  Logs:
+</h1>
 </div>
 
     </div>

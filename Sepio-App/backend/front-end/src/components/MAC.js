@@ -101,9 +101,9 @@ export default function Layout() {
                 />
                 <Button label = 'Search' icon='pi pi-search' onClick={handlePostMac} style={{ backgroundColor: '#183462', borderColor: '183462', marginLeft: '-10px' }} />
             </div>
-				<div style={{ display: 'flex', justifyContent: 'center', marginTop: '-150px', top: '4px', marginRight: '-150px'}}>
+				{/* <div style={{ display: 'flex', justifyContent: 'center', marginTop: '-150px', top: '4px', marginRight: '-150px'}}>
 					<img alt = 'logo' src = {MacSearch} height = '40' className = 'mr-2'/>
-				</div>
+				</div> */}
             {filteredMacAddresses.length > 0 && (
                 <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', marginRight: '-100px', width: '100%' }}>
                     <table className="table table-striped" style = {{ position: 'absolute', top:'55%', left: '30%', width:'50%'}}>
@@ -142,6 +142,11 @@ export default function Layout() {
                     </table>
                 </div>
             )}
+                        <div style = {{marginTop: '-120px', marginRight: '-200px'}}>
+<h1>
+  MAC Search:
+</h1>
+</div>
 		 </div>
 		 
 		 

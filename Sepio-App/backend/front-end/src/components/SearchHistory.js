@@ -97,19 +97,23 @@ export default function Layout() {
                 <InputText
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search MAC"
                     style={{ width: `${(searchQuery.length < 45 ? 45 : searchQuery.length) * 8 + 20}px`, minWidth: '600px' }} // Adjusting width dynamically
                 />
                 <Button label = 'Search' icon='pi pi-search' onClick={handlePostMac} style={{ backgroundColor: '#183462', borderColor: '183462', marginLeft: '-10px' }} />
             </div>
-				<div style={{ display: 'flex', justifyContent: 'center', marginTop: '-150px', top: '4px', marginRight: '-150px'}}>
+				{/* <div style={{ display: 'flex', justifyContent: 'center', marginTop: '-150px', top: '4px', marginRight: '-150px'}}>
 					<img alt = 'logo' src = {SearchLogo} height = '40' className = 'mr-2'/>
-				</div>
+				</div> */}
             {filteredMacAddresses.length > 0 && (
                 <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', marginRight: '-100px', width: '100%' }}>
 
                 </div>
             )}
+            <div style = {{marginTop: '-150px', marginRight: '-200px'}}>
+<h1>
+  Search History:
+</h1>
+</div>
 		 </div>
 		 
 		 
