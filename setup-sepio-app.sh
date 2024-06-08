@@ -95,7 +95,20 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-log "Frontend dependencies installed successfully."
+log "Clearing npm cache..."
+npm cache clean --force
+
+log "Removing node_modules and package-lock.json..."
+rm -rf node_modules package-lock.json
+
+log "Reinstalling dependencies..."
+npm install
+
+log "Updating dependencies..."
+npm update
+
+log "Installing latest eslint-webpack-plugin..."
+npm install eslint-webpack-plugin@latest --save-dev
 
 log "Running React build command..."
 npm run build
