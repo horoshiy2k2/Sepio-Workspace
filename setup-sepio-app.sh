@@ -11,7 +11,6 @@ check_error() {
   fi
 }
 
-
 check_git() {
   if command -v git >/dev/null 2>&1; then
     log "Git is already installed. Version: $(git --version)"
@@ -43,11 +42,23 @@ check_node() {
 }
 
 install_node() {
-  curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
-  check_error "Failed to add NodeSource APT repository."
+  if ! command -v nvm >/dev/null 2>&1; then
+    log "nvm (Node Version Manager) is not installed. Installing nvm..."
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+    check_error "Failed to install nvm."
 
-  sudo apt-get install -y nodejs
-  check_error "Failed to install Node.js and npm."
+    export NVM_DIR="$HOME/.nvm"
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+  fi
+
+  log "Installing Node.js version 16 using nvm..."
+  nvm install 16
+  check_error "Failed to install Node.js version 16 using nvm."
+
+  nvm use 16
+  nvm alias default 16
+  check_error "Failed to use Node.js version 16 with nvm."
 }
 
 install_dependencies() {
@@ -82,7 +93,6 @@ install_dependencies "Sepio-App/Backend"
 
 install_dependencies "Sepio-App/front-end"
 
-
 log "Running React build command..."
 cd Sepio-App/front-end || { log "Directory Sepio-App/front-end not found."; exit 1; }
 
@@ -90,11 +100,9 @@ npm run build
 if [ $? -ne 0 ]; then
   log "Build failed. Trying to fix potential issues..."
 
-
   rm -rf node_modules
   npm install
   check_error "Failed to reinstall dependencies."
-
 
   npm run build
   check_error "Failed to execute React build command after reinstalling dependencies."
@@ -103,3 +111,4 @@ fi
 log "Setup script executed successfully."
 
 exit 0
+
