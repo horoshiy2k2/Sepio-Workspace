@@ -1,135 +1,89 @@
 #!/bin/bash
 
 log() {
-  echo "$(date +'%Y-%m-%d %H:%M:%S') - $1" | tee -a setup.log
-}
-
-check_error() {
-  if [ $? -ne 0 ]; then
-    log "Error: $1"
-    exit 1
-  fi
-}
-
-check_git() {
-  if command -v git >/dev/null 2>&1; then
-    log "Git is already installed. Version: $(git --version)"
-  else
-    log "Git is not installed. Installing Git..."
-    sudo apt-get update
-    check_error "Failed to update package list."
-
-    sudo apt-get install -y git
-    check_error "Failed to install Git."
-  fi
-}
-
-check_curl() {
-  if command -v curl >/dev/null 2>&1; then
-    log "curl is already installed."
-  else
-    log "curl is not installed. Installing curl..."
-    sudo apt-get update
-    check_error "Failed to update package list."
-
-    sudo apt-get install -y curl
-    check_error "Failed to install curl."
-  fi
-}
-
-check_node() {
-  if command -v node >/dev/null 2>&1; then
-    NODE_VERSION=$(node -v)
-    log "Node.js is already installed. Version: $NODE_VERSION"
-    log "npm version: $(npm -v)"
-    
-    NODE_MAJOR_VERSION=$(echo $NODE_VERSION | cut -d. -f1 | cut -dv -f2)
-    if [ $NODE_MAJOR_VERSION -lt 14 ]; then
-      log "Node.js version is less than 14. Installing a newer version..."
-      install_node
-    fi
-  else
-    log "Node.js is not installed. Installing Node.js and npm..."
-    install_node
-  fi
-}
-
-install_node() {
-  if ! command -v nvm >/dev/null 2>&1; then
-    log "nvm (Node Version Manager) is not installed. Installing nvm..."
-    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
-    if [ $? -ne 0 ]; then
-      log "Failed to install nvm. Attempting to install Node.js directly..."
-      curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
-      sudo apt-get install -y nodejs
-      check_error "Failed to install Node.js version 16 directly."
-      return
-    fi
-
-    export NVM_DIR="$HOME/.nvm"
-    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-  fi
-
-  log "Installing Node.js version 16 using nvm..."
-  nvm install 16
-  check_error "Failed to install Node.js version 16 using nvm."
-
-  nvm use 16
-  nvm alias default 16
-  check_error "Failed to use Node.js version 16 with nvm."
-}
-
-install_dependencies() {
-  log "Installing dependencies in $1..."
-  cd "$1" || { log "Directory $1 not found."; exit 1; }
-  rm -rf node_modules
-  npm install
-  check_error "Failed to install dependencies in $1."
-  cd - >/dev/null
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - $1"
 }
 
 log "Starting setup script..."
 
-check_git
-check_curl
-
-if [ ! -d "Sepio-App" ]; then
-  log "Cloning repository..."
-  git clone https://github.com/Floreno12/Sepio-Application.git Sepio-App
-  check_error "Failed to clone repository."
+if ! command -v git &> /dev/null; then
+    log "Git is not installed. Installing Git..."
+    sudo apt-get update
+    sudo apt-get install -y git
 else
-  log "Directory Sepio-App already exists. Skipping clone step."
+    git_version=$(git --version)
+    log "Git is already installed. Version: $git_version"
 fi
 
 if [ ! -d "Sepio-App" ]; then
-  log "Critical Error: Directory Sepio-App does not exist."
-  exit 1
+    log "Cloning the Sepio-App repository..."
+    git clone https://github.com/Floreno12/Sepio-Application.git Sepio-App
+    if [ $? -ne 0 ]; then
+        log "Error: Failed to clone the repository."
+        exit 1
+    fi
+else
+    log "Directory Sepio-App already exists. Skipping clone step."
 fi
 
-check_node
+if command -v node &> /dev/null; then
+    node_version=$(node -v)
+    log "Node.js is already installed. Version: $node_version"
+    if [[ $node_version < v16 ]]; then
+        log "Node.js version is less than 16. Installing a newer version..."
+        if ! command -v nvm &> /dev/null; then
+            log "nvm (Node Version Manager) is not installed. Installing nvm..."
+            curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+        fi
+        log "Installing Node.js version 16 using nvm..."
+        nvm install 16
+        if [ $? -ne 0 ]; then
+            log "Error: Failed to install Node.js version 16 using nvm."
+            exit 1
+        fi
+        nvm use 16
+    fi
+else
+    log "Node.js is not installed. Installing Node.js version 16..."
+    curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
+    sudo apt-get install -y nodejs
+    if [ $? -ne 0 ]; then
+        log "Error: Failed to install Node.js version 16."
+        exit 1
+    fi
+fi
 
-install_dependencies "Sepio-App/backend"
+log "Node.js and npm installation completed successfully."
 
-install_dependencies "Sepio-App/front-end"
+cd Sepio-App/backend || { log "Error: Directory Sepio-App/backend does not exist."; exit 1; }
+log "Installing backend dependencies..."
+npm install
+if [ $? -ne 0 ]; then
+    log "Error: Failed to install backend dependencies."
+    exit 1
+fi
+
+log "Backend dependencies installed successfully."
+
+cd ../front-end || { log "Error: Directory Sepio-App/front-end does not exist."; exit 1; }
+log "Installing frontend dependencies..."
+npm install
+if [ $? -ne 0 ]; then
+    log "Error: Failed to install frontend dependencies."
+    exit 1
+fi
+
+log "Frontend dependencies installed successfully."
 
 log "Running React build command..."
-cd Sepio-App/front-end || { log "Directory Sepio-App/front-end not found."; exit 1; }
-
 npm run build
 if [ $? -ne 0 ]; then
-  log "Build failed. Trying to fix potential issues..."
-
-  rm -rf node_modules
-  npm install
-  check_error "Failed to reinstall dependencies."
-
-  npm run build
-  check_error "Failed to execute React build command after reinstalling dependencies."
+    log "Error: Failed to execute React build command."
+    exit 1
 fi
 
+log "React build completed successfully."
 log "Setup script executed successfully."
-
-exit 0
-
 
