@@ -24,6 +24,19 @@ check_git() {
   fi
 }
 
+check_curl() {
+  if command -v curl >/dev/null 2>&1; then
+    log "curl is already installed."
+  else
+    log "curl is not installed. Installing curl..."
+    sudo apt-get update
+    check_error "Failed to update package list."
+
+    sudo apt-get install -y curl
+    check_error "Failed to install curl."
+  fi
+}
+
 check_node() {
   if command -v node >/dev/null 2>&1; then
     NODE_VERSION=$(node -v)
@@ -45,7 +58,13 @@ install_node() {
   if ! command -v nvm >/dev/null 2>&1; then
     log "nvm (Node Version Manager) is not installed. Installing nvm..."
     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
-    check_error "Failed to install nvm."
+    if [ $? -ne 0 ]; then
+      log "Failed to install nvm. Attempting to install Node.js directly..."
+      curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
+      sudo apt-get install -y nodejs
+      check_error "Failed to install Node.js version 16 directly."
+      return
+    fi
 
     export NVM_DIR="$HOME/.nvm"
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
@@ -73,6 +92,7 @@ install_dependencies() {
 log "Starting setup script..."
 
 check_git
+check_curl
 
 if [ ! -d "Sepio-App" ]; then
   log "Cloning repository..."
@@ -111,4 +131,5 @@ fi
 log "Setup script executed successfully."
 
 exit 0
+
 
