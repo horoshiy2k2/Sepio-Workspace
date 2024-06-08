@@ -65,7 +65,7 @@ fi
 
 check_node
 
-install_dependencies "Sepio-App/Backend"
+install_dependencies "Sepio-App/backend"
 
 install_dependencies "Sepio-App/front-end"
 
