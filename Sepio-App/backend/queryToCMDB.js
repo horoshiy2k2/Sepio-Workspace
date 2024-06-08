@@ -66,7 +66,7 @@
 
 
 const express = require('express');
-const axios = require('axios');
+import axios from 'axios';
 const path = require('path');
 const app = express();
 const port = 3000;
