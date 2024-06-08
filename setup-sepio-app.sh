@@ -109,7 +109,7 @@ fi
 
 log "Backend dependencies installed successfully."
 
-cd ../../front-end || { log "Error: Directory Sepio-App/front-end does not exist."; exit 1; }
+cd ../front-end || { log "Error: Directory Sepio-App/front-end does not exist."; exit 1; }
 
 nvm install $frontend_node_version
 if [ $? -ne 0 ]; then
