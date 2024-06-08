@@ -1,8 +1,27 @@
 #!/bin/bash
 
-log() {
-    echo "$(date '+%Y-%m-%d %H:%M:%S') - $1"
+if ! command -v figlet &> /dev/null; then
+    echo "figlet is not installed. Installing figlet..."
+    sudo apt-get update
+    sudo apt-get install -y figlet
+fi
+
+if ! command -v lolcat &> /dev/null; then
+    echo "lolcat is not installed. Installing lolcat..."
+    sudo gem install lolcat
+fi
+
+show_header() {
+    echo "====================================" | lolcat
+    figlet -c Sepio Installer | lolcat
+    echo "====================================" | lolcat
 }
+
+log() {
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" | lolcat
+}
+
+show_header
 
 log "Starting setup script..."
 
@@ -86,4 +105,3 @@ fi
 
 log "React build completed successfully."
 log "Setup script executed successfully."
-
