@@ -46,36 +46,58 @@ else
     log "Directory Sepio-App already exists. Skipping clone step."
 fi
 
-if command -v node &> /dev/null; then
-    node_version=$(node -v)
-    log "Node.js is already installed. Version: $node_version"
-    if [[ $node_version < v16 ]]; then
-        log "Node.js version is less than 16. Installing a newer version..."
-        if ! command -v nvm &> /dev/null; then
-            log "nvm (Node Version Manager) is not installed. Installing nvm..."
-            curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
-            export NVM_DIR="$HOME/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-        fi
-        log "Installing Node.js version 16 using nvm..."
-        nvm install 16
-        if [ $? -ne 0 ]; then
-            log "Error: Failed to install Node.js version 16 using nvm."
-            exit 1
-        fi
-        nvm use 16
-    fi
-else
-    log "Node.js is not installed. Installing Node.js version 16..."
-    curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
-    sudo apt-get install -y nodejs
-    if [ $? -ne 0 ]; then
-        log "Error: Failed to install Node.js version 16."
-        exit 1
-    fi
+log "Checking for required Node.js versions from package.json files..."
+
+get_required_node_version() {
+    local package_json_path=$1
+    required_node_version=$(jq -r '.engines.node' "$package_json_path")
+    echo $required_node_version
+}
+
+if ! command -v jq &> /dev/null; then
+    log "jq is not installed. Installing jq..."
+    sudo apt-get update
+    sudo apt-get install -y jq
 fi
 
-log "Node.js and npm installation completed successfully."
+backend_node_version=$(get_required_node_version "Sepio-App/backend/package.json")
+
+if [ "$backend_node_version" = "null" ]; then
+    log "No specific Node.js version specified in Sepio-App/backend/package.json. Using default version."
+    backend_node_version="16"
+else
+    log "Required Node.js version for backend: $backend_node_version"
+fi
+
+frontend_node_version=$(get_required_node_version "Sepio-App/front-end/package.json")
+
+if [ "$frontend_node_version" = "null" ]; then
+    log "No specific Node.js version specified in Sepio-App/front-end/package.json. Using default version."
+    frontend_node_version="16"
+else
+    log "Required Node.js version for frontend: $frontend_node_version"
+fi
+
+if ! command -v nvm &> /dev/null; then
+    log "nvm (Node Version Manager) is not installed. Installing nvm..."
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+    export NVM_DIR="$HOME/.nvm"
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+fi
+
+nvm install $backend_node_version
+if [ $? -ne 0 ]; then
+    log "Error: Failed to install Node.js version $backend_node_version using nvm."
+    exit 1
+fi
+
+nvm use $backend_node_version
+
+log "Using Node.js version $backend_node_version for backend"
+node_version=$(node -v)
+log "Node.js version in use for backend: $node_version"
+
+log "Node.js and npm installation for backend completed successfully."
 
 cd Sepio-App/backend || { log "Error: Directory Sepio-App/backend does not exist."; exit 1; }
 log "Installing backend dependencies..."
@@ -87,7 +109,22 @@ fi
 
 log "Backend dependencies installed successfully."
 
-cd ../front-end || { log "Error: Directory Sepio-App/front-end does not exist."; exit 1; }
+cd ../../front-end || { log "Error: Directory Sepio-App/front-end does not exist."; exit 1; }
+
+nvm install $frontend_node_version
+if [ $? -ne 0 ]; then
+    log "Error: Failed to install Node.js version $frontend_node_version using nvm."
+    exit 1
+fi
+
+nvm use $frontend_node_version
+
+log "Using Node.js version $frontend_node_version for frontend"
+node_version=$(node -v)
+log "Node.js version in use for frontend: $node_version"
+
+log "Node.js and npm installation for frontend completed successfully."
+
 log "Installing frontend dependencies..."
 npm install
 if [ $? -ne 0 ]; then
