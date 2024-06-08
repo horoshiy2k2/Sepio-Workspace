@@ -1,6 +1,7 @@
 {
   "name": "front-end",
   "version": "0.1.0",
+  "type": "module",
   "private": true,
   "dependencies": {
     "@coreui/coreui": "^5.0.2",
