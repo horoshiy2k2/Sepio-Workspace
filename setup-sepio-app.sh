@@ -8,7 +8,8 @@ fi
 
 if ! command -v lolcat &> /dev/null; then
     echo "lolcat is not installed. Installing lolcat..."
-    sudo gem install lolcat
+    sudo apt-get update
+    sudo apt-get install -y lolcat
 fi
 
 show_header() {
