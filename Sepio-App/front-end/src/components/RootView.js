@@ -48,12 +48,12 @@ return (
 
                 </CNavItem>
                 
-                <CNavItem>
+                {/* <CNavItem>
                 <NavLink to = '/querytool/logs' className = 'nav-link'><RiDashboardLine className = 'nav-icon'/>Logs</NavLink>
-                </CNavItem>
-                <CNavItem>
+                </CNavItem> */}
+                {/* <CNavItem>
                     <NavLink to = '/querytool/searchhistory' className = 'nav-link'><RiDashboardLine className = 'nav-icon'/>SearchHistory</NavLink>
-                </CNavItem>
+                </CNavItem> */}
 
                 <CNavItem>
 
