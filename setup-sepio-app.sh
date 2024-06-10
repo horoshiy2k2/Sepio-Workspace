@@ -174,12 +174,12 @@ fi
 log "React build completed successfully."
 
 cd ../backend || { log "Error: Directory Sepio-App/backend does not exist."; exit 1; }
-log "Starting queryToCMDB.js..."
-node queryToCMDB.js &
+log "Starting server.js..."
+node server.js &
 if [ $? -ne 0 ]; then
-    log "Error: Failed to start queryToCMDB.js."
+    log "Error: Failed to start server.js."
     exit 1
 fi
 
-log "queryToCMDB.js started successfully."
+log "server.js started successfully."
 log "Setup script executed successfully."
