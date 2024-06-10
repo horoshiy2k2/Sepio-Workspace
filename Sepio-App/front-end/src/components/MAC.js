@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Menubar } from 'primereact/menubar';
 import { Button } from 'primereact/button';
 import { useNavigate } from 'react-router-dom';
@@ -7,15 +7,16 @@ import { NavLink } from 'react-router-dom';
 import { CSidebar, CSidebarNav, CNavItem, CContainer, CForm } from '@coreui/react';
 import { RiDashboardLine } from 'react-icons/ri';
 import { Avatar } from 'primereact/avatar';
+import { DataTable } from 'primereact/datatable';
+import { Column } from 'primereact/column';
 import axios from 'axios';
 import SepioLogo from './../image/Sepio_Logo.png';
-import MacSearch from './../image/Mac_Search.png';
 
 export default function Layout() {
     const navigate = useNavigate();
     const [searchQuery, setSearchQuery] = useState('');
     const [responseMessage, setResponseMessage] = useState('');
-    const [tables, setTables] = useState([]);
+    const [foundMacAddresses, setFoundMacAddresses] = useState([]);
 
     const handleLogout = () => {
         navigate('/');
@@ -27,17 +28,25 @@ export default function Layout() {
 
     const handlePostMac = async () => {
         try {
-            const response = await axios.post('/api/check-mac', { macAddress: searchQuery });
-            setResponseMessage(response.data.message);
-            if (response.data.tables) {
-                setTables(response.data.tables);
-            } else {
-                setTables([]);
-            }
+            
+            const macAddresses = searchQuery.split(',').map(mac => mac.trim());
+            const responce = await axios.post('/api/check-mac', { macAddress: macAddresses });
+
+            console.log("promises");
+            console.log("promises > " + responce.data);
+
+            //const results = await Promise.all(promises);
+            const newFoundMacAddresses = responce.data.map((response, index) => ({
+                macAddress: response.macAddress,
+                tables: response.tables || []
+            }));
+
+            setResponseMessage('Search completed');
+            setFoundMacAddresses(newFoundMacAddresses);
         } catch (error) {
             console.error('Error posting MAC address:', error);
             setResponseMessage('Error occurred while checking MAC address.');
-            setTables([]);
+            setFoundMacAddresses([]);
         }
     }
 
@@ -89,19 +98,23 @@ export default function Layout() {
             {responseMessage && (
                 <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', color: responseMessage.includes('not found') ? 'red' : 'green' }}>
                     {responseMessage}
-                    {tables.length > 0 && (
-                        <div style={{ marginTop: '20px' }}>
-                            <h4>Tables:</h4>
-                            <ul>
-                                {tables.map((table, index) => (
-                                    <li key={index}>{table}</li>
-                                ))}
-                            </ul>
-                        </div>
-                    )}
                 </div>
             )}
-            {/* Remaining JSX code */}
+            {foundMacAddresses.length > 0 && (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '20px' }}>
+                    {foundMacAddresses.map((item, index) => (
+                        <div key={index} style={{ marginBottom: '20px', width: '80%', paddingLeft: '300px' }}>
+                            <div style = {{marginLeft: '-300px'}}>
+                            <h4>{item.macAddress}</h4>
+                            </div>
+                            <DataTable value={[item]} responsiveLayout="scroll" style={{ minWidth: '200px', maxWidth: '600px' }}>
+                                <Column field="macAddress" header="MAC Address" style={{ width: '50%' }} />
+                                <Column field="tables" header="Found In" body={(rowData) => rowData.tables.join(', ')} style={{ width: '50%' }} />
+                            </DataTable>
+                        </div>
+                    ))}
+                </div>
+            )}
         </div>
     );
 }
