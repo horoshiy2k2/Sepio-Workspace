@@ -16,7 +16,24 @@ show_header() {
     echo "====================================" | lolcat
     figlet -c Sepio Installer | lolcat
     echo "====================================" | lolcat
+    echo "          /\        " | lolcat
+    echo "         /  \       " | lolcat
+    echo "        /____\      " | lolcat
+    echo "        |    |      " | lolcat
+    echo "        |____|      " | lolcat
+    echo "        |    |      " | lolcat
+    echo "        |____|      " | lolcat
+    echo "       /|    |\     " | lolcat
+    echo "      / |    | \    " | lolcat
+    echo "     /  |____|  \   " | lolcat
+    echo "         /\/\       " | lolcat
+    echo "        /    \      " | lolcat
+    echo "       /      \     " | lolcat
+    echo "====================================" | lolcat
 }
+
+show_header
+
 
 log() {
     echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" | lolcat
