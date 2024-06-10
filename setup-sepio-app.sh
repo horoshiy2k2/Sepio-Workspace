@@ -164,22 +164,30 @@ npm update
 log "Installing latest eslint-webpack-plugin..."
 npm install eslint-webpack-plugin@latest --save-dev
 
-log "Running React build command..."
+read -p "Do you want to run the React build command now? (y/n): " run_build
+if [[ "$run_build" == "y" ]]; then
 npm run build
 if [ $? -ne 0 ]; then
     log "Error: Failed to execute React build command."
     exit 1
 fi
-
 log "React build completed successfully."
+else
+log "Skipping React build command as per user request."
+fi
 
 cd ../backend || { log "Error: Directory Sepio-App/backend does not exist."; exit 1; }
+read -p "Do you want to start server.js now? (y/n): " start_server
+if [[ "$start_server" == "y" ]]; then
 log "Starting server.js..."
 node server.js &
 if [ $? -ne 0 ]; then
     log "Error: Failed to start server.js."
     exit 1
 fi
-
 log "server.js started successfully."
+else
+    log "Skipping server.js start as per user request."
+fi
+
 log "Setup script executed successfully."
