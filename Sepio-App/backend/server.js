@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 3000;
 app.use(bodyParser.json());
 app.use(cors());
 
-// MySQL connection
+// MySQL User DB connection
 const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
   host: process.env.DB_HOST,
   dialect: 'mysql',
@@ -20,9 +20,24 @@ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, proces
 
 sequelize
   .authenticate()
-  .then(() => console.log('Connected to MySQL'))
+  .then(() => {
+    console.log('Connected to MySQL');
+    // Create a user at the start of the application
+    User.findOrCreate({
+      where: { username: 'User' },
+      defaults: { password: 'Password123' }
+    }).then(([user, created]) => {
+      if (created) {
+        console.log('User created successfully.');
+      } else {
+        console.log('User already exists.');
+      }
+    }).catch(err => {
+      console.error('Error creating user:', err);
+    });
+  })
   .catch((err) => console.error('Error connecting to MySQL:', err));
-
+  
 // Routes
 let serviceNowCredentials = {};
 
