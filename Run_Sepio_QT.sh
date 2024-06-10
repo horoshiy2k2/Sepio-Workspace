@@ -20,7 +20,7 @@ else
     exit 1
 fi
 
-if cd ..; then
+if cd ../backend; then
     log "Changed directory back to project root."
 else
     log "Error: Could not change directory back to project root."
