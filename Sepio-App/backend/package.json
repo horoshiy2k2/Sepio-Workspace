@@ -6,7 +6,6 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
- 
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -20,6 +19,7 @@
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.10.0",
     "sequelize": "^6.37.3",
+    "stream-http": "^3.2.0",
     "winston": "^3.13.0",
     "ws": "^8.17.0"
   }
