@@ -6,7 +6,7 @@ log() {
 
 log "Starting the React build process..."
 
-if cd front-end; then
+if cd Sepio-App/front-end; then
     log "Changed directory to 'front-end'."
 else
     log "Error: 'front-end' directory does not exist."
