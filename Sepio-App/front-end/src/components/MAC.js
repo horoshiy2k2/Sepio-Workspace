@@ -8,27 +8,14 @@ import { CSidebar, CSidebarNav, CNavItem, CContainer, CForm } from '@coreui/reac
 import { RiDashboardLine } from 'react-icons/ri';
 import { Avatar } from 'primereact/avatar';
 import axios from 'axios';
-import SepioLogo  from './../image/Sepio_Logo.png';
-import MacSearch  from './../image/Mac_Search.png';
+import SepioLogo from './../image/Sepio_Logo.png';
+import MacSearch from './../image/Mac_Search.png';
 
 export default function Layout() {
     const navigate = useNavigate();
     const [searchQuery, setSearchQuery] = useState('');
-    const [macAddresses, setMacAddresses] = useState([]);
-    const [filteredMacAddresses, setFilteredMacAddresses] = useState([]);
-
-    useEffect(() => {
-        async function fetchMacAddresses() {
-            try {
-                const response = await axios.get('/api/mac-addresses');
-                setMacAddresses(response.data);
-                setFilteredMacAddresses([]);
-            } catch (error) {
-                console.error('Error fetching MAC addresses:', error);
-            }
-        }
-        fetchMacAddresses();
-    }, []);
+    const [responseMessage, setResponseMessage] = useState('');
+    const [tables, setTables] = useState([]);
 
     const handleLogout = () => {
         navigate('/');
@@ -36,22 +23,27 @@ export default function Layout() {
 
     const handleStartClick = () => {
         navigate('/querytool');
-      };
+    };
 
     const handlePostMac = async () => {
         try {
-            const response = await axios.post('/api/mac-addresses', { macAddress: searchQuery });
-            console.log('POST response:', response.data);
-            setMacAddresses(response.data);
-            setFilteredMacAddresses(response.data);
+            const response = await axios.post('/api/check-mac', { macAddress: searchQuery });
+            setResponseMessage(response.data.message);
+            if (response.data.tables) {
+                setTables(response.data.tables);
+            } else {
+                setTables([]);
+            }
         } catch (error) {
             console.error('Error posting MAC address:', error);
+            setResponseMessage('Error occurred while checking MAC address.');
+            setTables([]);
         }
     }
 
     const start = (
         <>
-            <img alt='logo' src={SepioLogo} height='40' className='mr-2' onClick = {handleStartClick} />
+            <img alt='logo' src={SepioLogo} height='40' className='mr-2' onClick={handleStartClick} />
         </>
     );
 
@@ -80,15 +72,8 @@ export default function Layout() {
                         <NavLink to='/querytool/mac' className='nav-link'><RiDashboardLine className='nav-icon' /> MAC</NavLink>
                     </CNavItem>
                     <CNavItem>
-                        <NavLink to='/querytool/logs' className='nav-link'><RiDashboardLine className='nav-icon' /> Logs</NavLink>
+                        <NavLink to='/querytool/settings' className='nav-link'><RiDashboardLine className='nav-icon'/> Settings </NavLink>
                     </CNavItem>
-                    <CNavItem>
-                        <NavLink to='/querytool/searchhistory' className='nav-link'><RiDashboardLine className='nav-icon' /> Search History</NavLink>
-                    </CNavItem>
-                    <CNavItem>
-
-                  <NavLink to = '/querytool/settings' className = 'nav-link'><RiDashboardLine className = 'nav-icon'/> Settings </NavLink>
-                  </CNavItem>
                 </CSidebarNav>
             </CSidebar>
 
@@ -99,60 +84,24 @@ export default function Layout() {
                     placeholder="Search MAC"
                     style={{ width: `${(searchQuery.length < 45 ? 45 : searchQuery.length) * 8 + 20}px`, minWidth: '600px' }} // Adjusting width dynamically
                 />
-                <Button label = 'Search' icon='pi pi-search' onClick={handlePostMac} style={{ backgroundColor: '#183462', borderColor: '183462', marginLeft: '-10px' }} />
+                <Button label='Search' icon='pi pi-search' onClick={handlePostMac} style={{ backgroundColor: '#183462', borderColor: '183462', marginLeft: '-10px' }} />
             </div>
-				{/* <div style={{ display: 'flex', justifyContent: 'center', marginTop: '-150px', top: '4px', marginRight: '-150px'}}>
-					<img alt = 'logo' src = {MacSearch} height = '40' className = 'mr-2'/>
-				</div> */}
-            {filteredMacAddresses.length > 0 && (
-                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', marginRight: '-100px', width: '100%' }}>
-                    <table className="table table-striped" style = {{ position: 'absolute', top:'55%', left: '30%', width:'50%'}}>
-                        <thead>
-                            <tr>
-                                <th>MAC Address Status</th>
-                                <th>MAC locations</th>
-                            </tr>
-                        </thead>
-                        <tbody  >
-                            {filteredMacAddresses.map((mac, index) => {
-                                if (typeof mac === 'string') { 
-                                    if (mac.indexOf("No record") >= 0) {
-                                        return (
-                                        <tr key={index}>
-                                            <td>{mac}</td>
-                                            <td></td>
-                                        </tr>
-                                    );
-                                    }else {
-                                        return (
-                                        <tr key={index}>
-                                            <td>{mac}</td>
-                                            <td>
-                                                <div>
-                                                    {filteredMacAddresses[index + 1].slice(1).map((item, subIndex) => (
-                                                        <div key={subIndex}>{item}</div>
-                                                    ))}
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    );
-                                }} 
-                            })}
-                        </tbody>
-                    </table>
+            {responseMessage && (
+                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', color: responseMessage.includes('not found') ? 'red' : 'green' }}>
+                    {responseMessage}
+                    {tables.length > 0 && (
+                        <div style={{ marginTop: '20px' }}>
+                            <h4>Tables:</h4>
+                            <ul>
+                                {tables.map((table, index) => (
+                                    <li key={index}>{table}</li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
                 </div>
             )}
-                        <div style = {{marginTop: '-120px', marginRight: '-200px'}}>
-<h1>
-  MAC Search:
-</h1>
-</div>
-		 </div>
-		 
-		 
+            {/* Remaining JSX code */}
+        </div>
     );
 }
-
-
-
-
