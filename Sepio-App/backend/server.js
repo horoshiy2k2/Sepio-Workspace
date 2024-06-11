@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 3000;
 app.use(bodyParser.json());
 app.use(cors());
 
-// MySQL connection
+// MySQL User DB connection
 // const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
 //   host: process.env.DB_HOST,
 //   dialect: 'mysql',
@@ -20,7 +20,22 @@ app.use(cors());
 
 // sequelize
 //   .authenticate()
-//   .then(() => console.log('Connected to MySQL'))
+//   .then(() => {
+//     console.log('Connected to MySQL');
+//     // Create a user at the start of the application
+//     User.findOrCreate({
+//       where: { username: 'User' },
+//       defaults: { password: 'Password123' }
+//     }).then(([user, created]) => {
+//       if (created) {
+//         console.log('User created successfully.');
+//       } else {
+//         console.log('User already exists.');
+//       }
+//     }).catch(err => {
+//       console.error('Error creating user:', err);
+//     });
+//   })
 //   .catch((err) => console.error('Error connecting to MySQL:', err));
 
 // Routes
@@ -29,6 +44,15 @@ let serviceNowCredentials = {};
 // app.get('/', (req, res) => {
 //   res.sendFile(path.join(__dirname, 'index.html'));
 // });
+
+
+
+//************************************
+//*********** Sepio creds ************
+//************************************ 
+var sepioLogin = "icloud";
+var sepioPassword = "Changecloud19";
+var sepioEndpoint = "sepio-hac-1-ng.sepiocyber.com";
 
 app.post('/check-connection', async (req, res) => {
   const { serviceNowInstance, username, password } = req.body;
@@ -52,40 +76,9 @@ app.post('/check-connection', async (req, res) => {
   }
 });
 
-// const getMacAddresses = async (macAddress) => {
-//     const { username, password, serviceNowInstance } = serviceNowCredentials;
-
-//     const auth = Buffer.from(`${username}:${password}`).toString('base64');
-
-//     const config = {
-//         headers: {
-//             'Content-Type': 'application/json',
-//             'Authorization': 'Basic ' + auth
-//         }
-//     };
-
-//     const body = {
-//         mac: macAddress,
-//         password: "Changecloud19",
-//         username: "icloud",
-//         endpoint: "sepio-hac-1-ng.sepiocyber.com"
-//     };
-
-//     try {
-//         const response = await axios.post(`${serviceNowInstance}/api/x_sepsy_sepio_cmdb/sepio_cmdb_rest_api/mac`, body, config);
-//         const macAddresses = response.data.result;
-//         console.log('Filtered MAC addresses:', macAddresses); // Logging for debugging
-//         return macAddresses;
-//     } catch (error) {
-//         console.error('Error fetching MAC addresses:', error);
-//         return [];
-//     }
-// };
-
 const getMacAddresses = async (macAddress) => {
 
   console.log(macAddress);
-  console.log(typeof (macAddress));
   const { username, password, serviceNowInstance } = serviceNowCredentials;
 
   const auth = Buffer.from(`${username}:${password}`).toString('base64');
@@ -122,6 +115,69 @@ const getMacAddresses = async (macAddress) => {
   }
 };
 
+const getSepioToken = async () => {
+
+  console.log("TOKEN: we are here!");
+
+  var requestBody = {
+    "username": sepioLogin,
+    "password": sepioPassword
+  };
+
+  const config = {
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  };
+
+  try {
+    const response = await axios.post(`https://${sepioEndpoint}/prime/webui/Auth/LocalLogin`, requestBody, config);
+
+    console.log(response.data.token);
+
+    return response.data.token;
+  } catch (error) {
+    console.error('Error getting token from Sepio:', error);
+    throw error;
+  }
+};
+
+const addTagsToSepioElements = async (elementSpecifier, tagsList, token) => {
+  console.log("SEPIO TAG: we are here!");
+
+  var tagsNames = [];
+
+  var tagsNames = tagsList.map(item => item);
+
+  const generalToken = tagsNames.length == 0 ? "not_incmdb" : "in_cmdb";
+
+  tagsNames.push(generalToken);
+
+  var requestBody = {
+    "tagNames": tagsNames,
+    "elementKeys": [elementSpecifier],
+    "function": 0,
+    "processChildren": false
+  };
+
+  const config = {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + token
+    }
+  };
+
+  try {
+    const response = await axios.post(`https://${sepioEndpoint}/prime/webui/tagsApi/tags/add-or-remove-tags-to-elements`, requestBody, config);
+    return response.data;
+
+  } catch (error) {
+
+    console.error('Error adding tags to Sepio elements:', error);
+    throw error;
+  }
+};
+
 app.post('/api/check-mac', async (req, res) => {
 
   const { macAddress } = req.body;
@@ -130,47 +186,81 @@ app.post('/api/check-mac', async (req, res) => {
 
     const result = await getMacAddresses(macAddress);
 
-    if (Array.isArray(result) && result.length > 0) {
+    if (Array.isArray(result)) {
 
-      let responce = [];
+      if (result.length > 0) {
 
-      macAddress.forEach(function (singleMac) {
+        let responce = [];
 
-        let macAndTables = {
-          "macAddress" : "",
-          "tables" : []
-        }
+        const token = await getSepioToken();
 
-        macAndTables.macAddress = singleMac;
+        for (const singleMac of macAddress) {
 
-        result.forEach(function (assetWithCmdbInfo) {
-
-          if (assetWithCmdbInfo.mac_address == singleMac && assetWithCmdbInfo.sys_class_name.indexOf("cmdb_ci") >= 0) {
-
-            macAndTables.tables.push(assetWithCmdbInfo.sys_class_name);
+          let macAndTables = {
+            "macAddress": "",
+            "tables": []
           }
 
-          //     res.json({ success: true, message: `MAC address ${macAddress} was found.`, macAddress, tables });
-          // } else {
-          //     res.json({ success: false, message: `MAC address ${macAddress} was not found.`, macAddress });
-          // }
+          for (const assetWithCmdbInfo of result) {
+
+            if (assetWithCmdbInfo.mac_address == singleMac && assetWithCmdbInfo.sys_class_name.indexOf("cmdb_ci") >= 0) {
+
+              macAndTables.tables.push(assetWithCmdbInfo.sys_class_name);
+            }
+
+          }
+
+          if (macAndTables.tables.length == 0) {
+
+            macAndTables.macAddress = `No record with MAC address: ${singleMac} was found.`;
+          } else {
+
+            macAndTables.macAddress = `Record with MAC address: ${singleMac} was found.`;
+          }
+
+          console.log("singleMac > " + singleMac);
+          console.log("macAndTables.tables > " + macAndTables.tables);
+
+          const responceFromTagAPI = await addTagsToSepioElements(singleMac, macAndTables.tables, token);
+
+          responce.push(macAndTables);
+
+          console.log("macAndTables > " + macAndTables);
+        };
+
+        console.log("responce >" + responce);
+
+        res.json(responce);
+
+      } else {
+
+        let responce = [];
+
+        macAddress.forEach(function (singleMac) {
+
+          let macAndTables = {
+            "macAddress": "",
+            "tables": []
+          }
+
+          macAndTables.macAddress = `No record with MAC address: ${singleMac} was found.`;
+
+          responce.push(macAndTables);
         });
 
-        responce.push(macAndTables);
-      });
+        res.json(responce);
+      }
+    } else {
+      let responce = [];
 
-
-      console.log("responce >" + responce);
+      let macAndTables = {
+        "error": "Unexpected error"
+      }
+      responce.push(macAndTables);
 
       res.json(responce);
     }
 
-    // if (Array.isArray(result) && result.length > 0 && Array.isArray(result)) {
-    //     const tables = result[1]; // Assuming result[1] contains the table names
-    //     res.json({ success: true, message: `MAC address ${macAddress} was found.`, macAddress, tables });
-    // } else {
-    //     res.json({ success: false, message: `MAC address ${macAddress} was not found.`, macAddress });
-    // }
   } catch (error) {
     res.status(500).json({ success: false, message: 'Error occurred while checking MAC address.' });
   }
