@@ -351,9 +351,9 @@ app.listen(PORT, () => {
 });
 
 
-const getMacAddressesPost = async (macAddresses) => {
-    const { username, password, serviceNowInstance } = serviceNowCredentials;
-    const auth = Buffer.from(`${username}:${password}`).toString('base64');
+const getMacAddressesPost = async (macAddresses, targetEndpoint, userlogin, password) => {
+    //const { username, password, serviceNowInstance } = serviceNowCredentials;
+    const auth = Buffer.from(`${userlogin}:${password}`).toString('base64');
   
     const config = {
       headers: {
@@ -363,7 +363,7 @@ const getMacAddressesPost = async (macAddresses) => {
     };
   
     const queries = macAddresses.map(mac => `mac_addressLIKE${mac}`).join('^OR');
-    const endpoint = `https://${serviceNowInstance}/api/now/table/cmdb_ci?sysparm_query=${queries}&sysparm_fields=mac_address,sys_class_name,sys_id`;
+    const endpoint = `https://${targetEndpoint}/api/now/table/cmdb_ci?sysparm_query=${queries}&sysparm_fields=mac_address,sys_class_name,sys_id`;
   
     try {
       const response = await axios.get(endpoint, config);
@@ -376,16 +376,19 @@ const getMacAddressesPost = async (macAddresses) => {
   
   app.post('/receive-data', async (req, res) => {
     const { macAddresses } = req.body;
+    const { targetEndpoint } = req.body;
+    const { userlogin } = req.body;
+    const { password } = req.body;
     console.log('Received MAC addresses:', macAddresses);
   
-    if (!Array.isArray(macAddresses) || macAddresses.length !== 5) {
-      return res.status(400).json({ success: false, message: 'Please provide exactly 5 MAC addresses' });
-    }
+    // if (!Array.isArray(macAddresses) || macAddresses.length !== 5) {
+    //   return res.status(400).json({ success: false, message: 'Please provide exactly 5 MAC addresses' });
+    // }
   
     const foundMacAddresses = [];
     const notFoundMacAddresses = [];
   
-    const results = await getMacAddressesPost(macAddresses);
+    const results = await getMacAddressesPost(macAddresses, targetEndpoint, userlogin, password);
   
     macAddresses.forEach(mac => {
       const matchingResults = results.filter(result => result.mac_address === mac);
