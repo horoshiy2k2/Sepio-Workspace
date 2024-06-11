@@ -154,6 +154,7 @@ import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import axios from 'axios';
 import { Message } from 'primereact/message';
+import { Toast } from 'primereact/toast';
 
 export default function Layout() {
 
@@ -165,6 +166,7 @@ export default function Layout() {
   const [sepioUsername, setSepioUsername] = useState('');
   const [sepioPassword, setSepioPassword] = useState('');
   const [sepioMessage, setSepioMessage] = useState('');
+  const toast = React.useRef(null);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -172,14 +174,28 @@ export default function Layout() {
   // Функція для отримання даних з сервера
   const fetchData = async () => {
     try {
-      const response = await axios.get('/get-source');
-      setServiceNowInstance(response.data.serviceNowInstance);
-      setUsername(response.data.username);
-      setPassword(response.data.password);
+      const snResponse = await axios.get('/get-source');
+      setServiceNowInstance(snResponse.data.serviceNowInstance);
+      setUsername(snResponse.data.username);
+      setPassword(snResponse.data.password);
+
+      const sepioResponse = await axios.get('/get-sepio-source');
+      setSepioEndpoint(sepioResponse.data.sepioEndpoint);
+      setSepioUsername(sepioResponse.data.sepioUsername);
+      setSepioPassword(sepioResponse.data.sepioPassword)
+
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
+
+  const showError = (message) => {
+    toast.current.show({ severity: 'error', summary: 'Error', detail: message, life: 3000 });
+  };
+
+  const showSuccess = (message) => {
+    toast.current.show({ severity: 'success', summary: 'Success', detail: message, life: 3000 });
+};
 
   // Виконання fetchData при зміні маршруту
   useEffect(() => {
@@ -203,12 +219,12 @@ export default function Layout() {
       });
 
       if (response.data.success) {
-        setMessage(response.data.message);
+        showSuccess(response.data.message);
       } else {
-        setMessage(response.data.message);
+        showSuccess(response.data.message);
       }
     } catch (error) {
-      setMessage('Connection failed. Please check your credentials and try again.');
+      showError('Connection failed. Please check your credentials and try again.');
     }
   };
 
@@ -221,12 +237,12 @@ export default function Layout() {
       });
 
       if (response.data.success) {
-        setSepioMessage(response.data.message);
+        showSuccess(response.data.message);
       } else {
-        setSepioMessage(response.data.message);
+        showSuccess(response.data.message);
       }
     } catch (error) {
-      setSepioMessage('Connection failed. Please check your credentials and try again.');
+      showError('Connection failed. Please check your credentials and try again.');
     }
   };
 
@@ -252,6 +268,7 @@ export default function Layout() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+      <Toast ref={toast} />
       <Menubar start={start} end={end} />
 
       <div style={{ display: 'flex', flex: '1' }}>
@@ -309,7 +326,6 @@ export default function Layout() {
             <Button label="Test Connection" icon="pi pi-check" onClick={testConnection} style={{ backgroundColor: '#183462', borderColor: '#183462', marginBottom: '20px', width: '35%' }} />
 
             <div style={{ marginTop: '20px' }}></div>
-            {/* 
             <h3>Sepio Credentials</h3>
             <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '20px' }}>
               <InputText
@@ -334,7 +350,7 @@ export default function Layout() {
                 style={{ marginBottom: '10px', width: '100%' }}
               />
             </div>
-            <Button label="Test Connection" icon="pi pi-check" onClick={testSepioConnection} style={{ backgroundColor: '#183462', borderColor: '#183462', width: '35%' }} /> */}
+            <Button label="Test Connection" icon="pi pi-check" onClick={testSepioConnection} style={{ backgroundColor: '#183462', borderColor: '#183462', width: '35%' }} />
           </div>
         </div>
       </div>

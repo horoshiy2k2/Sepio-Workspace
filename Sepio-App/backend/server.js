@@ -54,12 +54,20 @@ app.get('/get-source', async (req, res) => {
   //return serviceNowCredentials;
 });
 
+app.get('/get-sepio-source', async (req, res) => {
+
+  console.log("we are here > /get-sepio-source + " + sepioCredentials.toString());
+
+  res.json(sepioCredentials);
+  //return serviceNowCredentials;
+});
+
 //************************************
 //*********** Sepio creds ************
 //************************************ 
-var sepioLogin = "icloud";
-var sepioPassword = "Changecloud19";
-var sepioEndpoint = "sepio-hac-1-ng.sepiocyber.com";
+// var sepioLogin = "icloud";
+// var sepioPassword = "Changecloud19";
+// var sepioEndpoint = "sepio-hac-1-ng.sepiocyber.com";
 
 app.post('/check-connection', async (req, res) => {
   const { serviceNowInstance, username, password } = req.body;
@@ -84,12 +92,16 @@ app.post('/check-connection', async (req, res) => {
 });
 
 app.post('/check-sepio-connection', async (req, res) => {
-  let { sepioEndpoint, username, password } = req.body;
-  sepioCredentials = { sepioEndpoint, username, password };
+  let { sepioEndpoint, sepioUsername, sepioPassword } = req.body;
+  sepioCredentials = { sepioEndpoint, sepioUsername, sepioPassword };
 
+  console.log("sepioEndpoint > " + sepioEndpoint);
+
+  console.log("username > " + sepioUsername);
+  console.log("password > " + sepioPassword);
   var requestBody = {
-    "username": username,
-    "password": password
+    "username": sepioUsername,
+    "password": sepioPassword
   };
 
   const config = {
@@ -133,7 +145,7 @@ const getMacAddresses = async (macAddress) => {
     macAddress.map(singleMAC => snQueryParms.push("mac_addressLIKE" + singleMAC));
 
     console.log(`endpoint > ${snQueryParms}`);
-    
+
     searchQuery = snQueryParms.join("%5EOR");
 
     console.log(`endpoint > ${searchQuery}`);
@@ -160,8 +172,10 @@ const getSepioToken = async () => {
 
   console.log("TOKEN: we are here!");
 
+  let { sepioEndpoint, sepioUsername, sepioPassword } = sepioCredentials;
+
   var requestBody = {
-    "username": sepioLogin,
+    "username": sepioUsername,
     "password": sepioPassword
   };
 
@@ -184,6 +198,9 @@ const getSepioToken = async () => {
 };
 
 const addTagsToSepioElements = async (elementSpecifier, tagsList, token) => {
+
+  let { sepioEndpoint, sepioUsername, sepioPassword } = sepioCredentials;
+  
   console.log("SEPIO TAG: we are here!");
 
   var tagsNames = [];
@@ -201,6 +218,8 @@ const addTagsToSepioElements = async (elementSpecifier, tagsList, token) => {
     "processChildren": false
   };
 
+  
+
   const config = {
     headers: {
       'Content-Type': 'application/json',
@@ -210,7 +229,7 @@ const addTagsToSepioElements = async (elementSpecifier, tagsList, token) => {
 
   try {
     const response = await axios.post(`https://${sepioEndpoint}/prime/webui/tagsApi/tags/add-or-remove-tags-to-elements`, requestBody, config);
-    
+
     console.log("response.status > " + response.status);
 
     return response;
@@ -352,62 +371,62 @@ app.listen(PORT, () => {
 
 
 const getMacAddressesPost = async (macAddresses, targetEndpoint, userlogin, password) => {
-    //const { username, password, serviceNowInstance } = serviceNowCredentials;
-    const auth = Buffer.from(`${userlogin}:${password}`).toString('base64');
-  
-    const config = {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Basic ' + auth
-      }
-    };
-  
-    const queries = macAddresses.map(mac => `mac_addressLIKE${mac}`).join('^OR');
-    const endpoint = `https://${targetEndpoint}/api/now/table/cmdb_ci?sysparm_query=${queries}&sysparm_fields=mac_address,sys_class_name,sys_id`;
-  
-    try {
-      const response = await axios.get(endpoint, config);
-      return response.data.result;
-    } catch (error) {
-      console.error('Error fetching MAC addresses:', error);
-      return [];
+  //const { username, password, serviceNowInstance } = serviceNowCredentials;
+  const auth = Buffer.from(`${userlogin}:${password}`).toString('base64');
+
+  const config = {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Basic ' + auth
     }
   };
-  
-  app.post('/receive-data', async (req, res) => {
-    const { macAddresses } = req.body;
-    const { targetEndpoint } = req.body;
-    const { userlogin } = req.body;
-    const { password } = req.body;
-    console.log('Received MAC addresses:', macAddresses);
-  
-    // if (!Array.isArray(macAddresses) || macAddresses.length !== 5) {
-    //   return res.status(400).json({ success: false, message: 'Please provide exactly 5 MAC addresses' });
-    // }
-  
-    const foundMacAddresses = [];
-    const notFoundMacAddresses = [];
-  
-    const results = await getMacAddressesPost(macAddresses, targetEndpoint, userlogin, password);
-  
-    macAddresses.forEach(mac => {
-      const matchingResults = results.filter(result => result.mac_address === mac);
-      if (matchingResults.length > 0) {
-        foundMacAddresses.push({
-          macAddress: mac,
-          tables: matchingResults.map(result => ({
-            table: result.sys_class_name,
-            sys_id: result.sys_id
-          }))
-        });
-      } else {
-        notFoundMacAddresses.push(mac);
-      }
-    });
-  
-    res.json({
-      success: true,
-      foundMacAddresses,
-      notFoundMacAddresses
-    });
+
+  const queries = macAddresses.map(mac => `mac_addressLIKE${mac}`).join('^OR');
+  const endpoint = `https://${targetEndpoint}/api/now/table/cmdb_ci?sysparm_query=${queries}&sysparm_fields=mac_address,sys_class_name,sys_id`;
+
+  try {
+    const response = await axios.get(endpoint, config);
+    return response.data.result;
+  } catch (error) {
+    console.error('Error fetching MAC addresses:', error);
+    return [];
+  }
+};
+
+app.post('/receive-data', async (req, res) => {
+  const { macAddresses } = req.body;
+  const { targetEndpoint } = req.body;
+  const { userlogin } = req.body;
+  const { password } = req.body;
+  console.log('Received MAC addresses:', macAddresses);
+
+  // if (!Array.isArray(macAddresses) || macAddresses.length !== 5) {
+  //   return res.status(400).json({ success: false, message: 'Please provide exactly 5 MAC addresses' });
+  // }
+
+  const foundMacAddresses = [];
+  const notFoundMacAddresses = [];
+
+  const results = await getMacAddressesPost(macAddresses, targetEndpoint, userlogin, password);
+
+  macAddresses.forEach(mac => {
+    const matchingResults = results.filter(result => result.mac_address === mac);
+    if (matchingResults.length > 0) {
+      foundMacAddresses.push({
+        macAddress: mac,
+        tables: matchingResults.map(result => ({
+          table: result.sys_class_name,
+          sys_id: result.sys_id
+        }))
+      });
+    } else {
+      notFoundMacAddresses.push(mac);
+    }
   });
+
+  res.json({
+    success: true,
+    foundMacAddresses,
+    notFoundMacAddresses
+  });
+});
