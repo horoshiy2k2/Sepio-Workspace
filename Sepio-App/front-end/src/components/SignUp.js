@@ -123,7 +123,7 @@ export default function InputSubscription() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    if (data.text === 'Admin' && password === 'password1') {
+    if (data.text === 'admin' && password === 'admin') {
       setData((current) => ({ ...current, status: 'loading' }));
       try {
         // Replace timeout with real backend operation

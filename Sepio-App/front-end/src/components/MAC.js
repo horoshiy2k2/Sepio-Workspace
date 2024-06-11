@@ -223,7 +223,7 @@ export default function Layout() {
                 <Button label='Search' icon='pi pi-search' onClick={handlePostMac} style={{ backgroundColor: '#183462', borderColor: '183462', marginLeft: '5px' }} />
             </div>
             {responseMessage && (
-                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', marginLeft: '20px', color: responseMessage.includes('Please enter') ? 'red' : 'green' }}>
+                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', marginLeft: '140px', color: responseMessage.includes('Please enter') ? 'red' : 'green' }}>
                     {responseMessage}
                 </div>
             )}
