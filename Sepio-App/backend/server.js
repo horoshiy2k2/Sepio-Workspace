@@ -40,6 +40,7 @@ app.use(cors());
 
 // Routes
 let serviceNowCredentials = {};
+let sepioCredentials = {};
 
 // app.get('/', (req, res) => {
 //   res.sendFile(path.join(__dirname, 'index.html'));
@@ -76,6 +77,35 @@ app.post('/check-connection', async (req, res) => {
   }
 });
 
+app.post('/check-sepio-connection', async (req, res) => {
+  const { sepioEndpoint, username, password } = req.body;
+  sepioCredentials = { serviceNowInstance, username, password };
+
+  var requestBody = {
+    "username": sepioLogin,
+    "password": sepioPassword
+  };
+
+  const config = {
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  };
+
+  try {
+    const response = await axios.post(`https://${sepioEndpoint}/prime/webui/Auth/LocalLogin`, requestBody, config);
+
+    if (response.status === 200) {
+      res.json({ success: true, message: 'Connection successful!' });
+    } else {
+      res.status(500).json({ success: false, message: 'Connection failed!' });
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Connection failed!', error: error.message });
+  }
+
+});
+
 const getMacAddresses = async (macAddress) => {
 
   console.log(macAddress);
@@ -95,7 +125,12 @@ const getMacAddresses = async (macAddress) => {
     let searchQuery = "";
 
     macAddress.map(singleMAC => snQueryParms.push("mac_addressLIKE" + singleMAC));
+
+    console.log(`endpoint > ${snQueryParms}`);
+    
     searchQuery = snQueryParms.join("%5EOR");
+
+    console.log(`endpoint > ${searchQuery}`);
 
     let endpoint = `https://${serviceNowInstance}/api/now/table/cmdb_ci?sysparm_query=GOTO${searchQuery}&sysparm_fields=mac_address%2Csys_class_name%2Csys_id`;
 
@@ -105,7 +140,7 @@ const getMacAddresses = async (macAddress) => {
 
     const queryResults = response.data.result;
 
-    console.log('Filtered MAC addresses:', queryResults); // Logging for debugging
+    console.log('Filtered MAC addresses:', queryResults);
 
     return queryResults;
 
@@ -169,7 +204,10 @@ const addTagsToSepioElements = async (elementSpecifier, tagsList, token) => {
 
   try {
     const response = await axios.post(`https://${sepioEndpoint}/prime/webui/tagsApi/tags/add-or-remove-tags-to-elements`, requestBody, config);
-    return response.data;
+    
+    console.log("response.status > " + response.status);
+
+    return response;
 
   } catch (error) {
 
@@ -267,6 +305,7 @@ app.post('/api/check-mac', async (req, res) => {
 });
 
 app.post('/receive-data', async (req, res) => {
+
   const { macAddresses } = req.body;
   console.log('Received MAC addresses:', macAddresses);
 
@@ -293,7 +332,7 @@ app.post('/receive-data', async (req, res) => {
   });
 });
 
-// Serve static files from the React build directory
+// Serve static files from the React build directory 
 app.use(express.static(path.join(__dirname, '../front-end/build')));
 
 // Serve React app for any other routes
