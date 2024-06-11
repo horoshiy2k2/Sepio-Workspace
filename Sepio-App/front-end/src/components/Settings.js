@@ -154,13 +154,16 @@ import 'primeicons/primeicons.css';
 import axios from 'axios';
 import { Message } from 'primereact/message';
 
-
 export default function Layout() {
 
   const [serviceNowInstance, setServiceNowInstance] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
+  const [sepioEndpoint, setSepioEndpoint] = useState('');
+  const [sepioUsername, setSepioUsername] = useState('');
+  const [sepioPassword, setSepioPassword] = useState('');
+  const [sepioMessage, setSepioMessage] = useState('');
 
   const navigate = useNavigate();
 
@@ -190,6 +193,24 @@ export default function Layout() {
     }
   };
 
+  const testSepioConnection = async () => {
+    try {
+      const response = await axios.post('/check-sepio-connection', {
+        sepioEndpoint,
+        sepioUsername,
+        sepioPassword
+      });
+
+      if (response.data.success) {
+        setSepioMessage(response.data.message);
+      } else {
+        setSepioMessage(response.data.message);
+      }
+    } catch (error) {
+      setSepioMessage('Connection failed! Please check your credentials and try again.');
+    }
+  };
+
   const start = (
     <img
       alt='logo'
@@ -211,9 +232,10 @@ export default function Layout() {
   );
 
   return (
-    <div>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
       <Menubar start={start} end={end} />
-      <div style={{ display: 'flex' }}>
+
+      <div style={{ display: 'flex', flex: '1' }}>
         <CSidebar className='border-end custom-sidebar'>
           <CSidebarNav>
             <CContainer fluid>
@@ -221,55 +243,85 @@ export default function Layout() {
             <CNavItem>
               <NavLink to='/querytool/mac' className='nav-link'><RiDashboardLine className='nav-icon' /> MAC</NavLink>
             </CNavItem>
-            {/* <CNavItem>
-              <NavLink to='/querytool/logs' className='nav-link'><RiDashboardLine className='nav-icon' /> Logs</NavLink>
-            </CNavItem>
-            <CNavItem>
-              <NavLink to='/querytool/searchhistory' className='nav-link'><RiDashboardLine className='nav-icon' /> Search History</NavLink>
-            </CNavItem> */}
             <CNavItem>
               <NavLink to='/querytool/settings' className='nav-link'><RiDashboardLine className='nav-icon' /> Settings </NavLink>
             </CNavItem>
           </CSidebarNav>
         </CSidebar>
-        <div style={{ marginTop: '100px', marginLeft: '300px', position: 'relative', width: '40%' }}>
-          <div>
+
+        <div style={{ flex: '1', padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+          <div style={{ width: '70%', maxWidth: '600px', minWidth: '300px', padding: '20px', borderRadius: '8px', boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)', backgroundColor: 'white' }}>
+            <div style={{ marginBottom: '20px' }}>
+              {message && (
+                <div style={{ marginBottom: '20px' }}>
+                  <Message text={message} />
+                </div>
+              )}
+              {sepioMessage && (
+                <div style={{ marginBottom: '20px' }}>
+                  <Message text={sepioMessage} />
+                </div>
+              )}
+            </div>
             <h3>ServiceNow Credentials</h3>
             <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '20px' }}>
               <InputText
-                        type="text"
-                        placeholder="ServiceNow Instance"
-                        value={serviceNowInstance}
-                        onChange={(e) => setServiceNowInstance(e.target.value)}
+                type="text"
+                placeholder="ServiceNow Instance"
+                value={serviceNowInstance}
+                onChange={(e) => setServiceNowInstance(e.target.value)}
+                style={{ marginBottom: '10px', width: '100%' }}
               />
               <InputText
-                        type="text"
-                        placeholder="Username"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
+                type="text"
+                placeholder="Username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                style={{ marginBottom: '10px', width: '100%' }}
               />
               <InputText
                 type="password"
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                style={{ marginBottom: '10px', width: '100%' }}
               />
             </div>
-          </div>
-          <Button label="Test Connection" icon="pi pi-check" onClick={testConnection} style={{ backgroundColor: '#183462', borderColor: '#183462' }} />
-          
-          {message && (
-            <div style = {{marginTop: '50px'}}>
-              <Message text={message} />
+            <Button label="Test Connection" icon="pi pi-check" onClick={testConnection} style={{ backgroundColor: '#183462', borderColor: '#183462', marginBottom: '20px', width: '35%' }} />
+
+            <div style={{ marginTop: '20px' }}></div>
+
+            <h3>Sepio Credentials</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '20px' }}>
+              <InputText
+                type="text"
+                placeholder="Sepio Endpoint"
+                value={sepioEndpoint}
+                onChange={(e) => setSepioEndpoint(e.target.value)}
+                style={{ marginBottom: '10px', width: '100%' }}
+              />
+              <InputText
+                type="text"
+                placeholder="Username"
+                value={sepioUsername}
+                onChange={(e) => setSepioUsername(e.target.value)}
+                style={{ marginBottom: '10px', width: '100%' }}
+              />
+              <InputText
+                type="password"
+                placeholder="Password"
+                value={sepioPassword}
+                onChange={(e) => setSepioPassword(e.target.value)}
+                style={{ marginBottom: '10px', width: '100%' }}
+              />
             </div>
-          )}
-          
+            <Button label="Test Connection" icon="pi pi-check" onClick={testSepioConnection} style={{ backgroundColor: '#183462', borderColor: '#183462', width: '35%' }} />
+          </div>
         </div>
       </div>
     </div>
   );
 }
-
 
 
 
