@@ -290,7 +290,7 @@ export default function Layout() {
             <Button label="Test Connection" icon="pi pi-check" onClick={testConnection} style={{ backgroundColor: '#183462', borderColor: '#183462', marginBottom: '20px', width: '35%' }} />
 
             <div style={{ marginTop: '20px' }}></div>
-
+{/* 
             <h3>Sepio Credentials</h3>
             <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '20px' }}>
               <InputText
@@ -315,7 +315,7 @@ export default function Layout() {
                 style={{ marginBottom: '10px', width: '100%' }}
               />
             </div>
-            <Button label="Test Connection" icon="pi pi-check" onClick={testSepioConnection} style={{ backgroundColor: '#183462', borderColor: '#183462', width: '35%' }} />
+            <Button label="Test Connection" icon="pi pi-check" onClick={testSepioConnection} style={{ backgroundColor: '#183462', borderColor: '#183462', width: '35%' }} /> */}
           </div>
         </div>
       </div>

@@ -67,3 +67,68 @@ return (
     </div>
 );
 }
+
+// Import all dependencies
+// import React, { useState } from 'react';
+// import { Menubar } from 'primereact/menubar';
+// import { Avatar } from 'primereact/avatar';
+// import { Popover } from 'primereact/popover';
+
+
+// import { NavLink } from 'react-router-dom';
+// import { RiDashboardLine } from 'react-icons/ri';
+// import SepioLogo from './../image/Sepio_Logo.png';
+// import SepioMainLogo from './../image/QueryTool.png';
+
+// export default function Layout() {
+//     const [popoverVisible, setPopoverVisible] = useState(false);
+
+//     const user = {
+//         name: 'John Doe',
+//         email: 'john.doe@example.com',
+//         // Add more user details as needed
+//     };
+
+//     const showPopover = (event) => {
+//         setPopoverVisible(true);
+//     };
+
+//     const hidePopover = (event) => {
+//         setPopoverVisible(false);
+//     };
+
+//     const popoverTemplate = (
+//         <div className="user-popover">
+//             <div>Name: {user.name}</div>
+//             <div>Email: {user.email}</div>
+//             {/* Add more user details here */}
+//         </div>
+//     );
+
+//     const start = <img alt='logo' src={SepioLogo} height='40' className='mr-2' />;
+
+//     const end = (
+//         <div className='flex align-items-center gap-2'>
+//             <NavLink to='/' className='p-button p-component p-button-text' style={{ borderRadius: '10px', padding: '10px' }}>
+//                 <span className='pi pi-sign-out' style={{ marginRight: '5px' }} />
+//                 Logout
+//             </NavLink>
+//             <div onMouseEnter={showPopover} onMouseLeave={hidePopover}>
+//                 <Avatar icon='pi pi-user' size='large' shape='circle' />
+//                 <Popover visible={popoverVisible} onHide={hidePopover} target={document.getElementsByClassName("p-avatar")[0]}>
+//                     {popoverTemplate}
+//                 </Popover>
+//             </div>
+//         </div>
+//     );
+
+//     return (
+//         <div>
+//             <Menubar start={start} end={end} />
+//             {/* Your CSidebar and other content */}
+//             <div style={{ display: 'flex', justifyContent: 'center', marginTop: '-600px', top: '4px', marginRight: '-150px' }}>
+//                 <img src={SepioMainLogo} height='60' className='mr-2' />
+//             </div>
+//         </div>
+//     );
+// }
