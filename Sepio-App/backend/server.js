@@ -46,7 +46,13 @@ let sepioCredentials = {};
 //   res.sendFile(path.join(__dirname, 'index.html'));
 // });
 
+app.get('/get-source', async (req, res) => {
 
+  console.log("we are here > /get-source + " + serviceNowCredentials.toString());
+
+  res.json(serviceNowCredentials);
+  //return serviceNowCredentials;
+});
 
 //************************************
 //*********** Sepio creds ************
@@ -78,12 +84,12 @@ app.post('/check-connection', async (req, res) => {
 });
 
 app.post('/check-sepio-connection', async (req, res) => {
-  const { sepioEndpoint, username, password } = req.body;
-  sepioCredentials = { serviceNowInstance, username, password };
+  let { sepioEndpoint, username, password } = req.body;
+  sepioCredentials = { sepioEndpoint, username, password };
 
   var requestBody = {
-    "username": sepioLogin,
-    "password": sepioPassword
+    "username": username,
+    "password": password
   };
 
   const config = {
@@ -109,7 +115,7 @@ app.post('/check-sepio-connection', async (req, res) => {
 const getMacAddresses = async (macAddress) => {
 
   console.log(macAddress);
-  const { username, password, serviceNowInstance } = serviceNowCredentials;
+  let { username, password, serviceNowInstance } = serviceNowCredentials;
 
   const auth = Buffer.from(`${username}:${password}`).toString('base64');
 
@@ -304,33 +310,33 @@ app.post('/api/check-mac', async (req, res) => {
   }
 });
 
-app.post('/receive-data', async (req, res) => {
+// app.post('/receive-data', async (req, res) => {
 
-  const { macAddresses } = req.body;
-  console.log('Received MAC addresses:', macAddresses);
+//   const { macAddresses } = req.body;
+//   console.log('Received MAC addresses:', macAddresses);
 
-  if (!Array.isArray(macAddresses) || macAddresses.length !== 5) {
-    return res.status(400).json({ success: false, message: 'Please provide exactly 5 MAC addresses' });
-  }
+//   if (!Array.isArray(macAddresses) || macAddresses.length !== 5) {
+//     return res.status(400).json({ success: false, message: 'Please provide exactly 5 MAC addresses' });
+//   }
 
-  const foundMacAddresses = [];
-  const notFoundMacAddresses = [];
+//   const foundMacAddresses = [];
+//   const notFoundMacAddresses = [];
 
-  for (const mac of macAddresses) {
-    const result = await getMacAddresses(mac);
-    if (Array.isArray(result) && result.length > 0 && Array.isArray(result[1])) {
-      foundMacAddresses.push({ macAddress: mac, table: result[1] });
-    } else {
-      notFoundMacAddresses.push(mac);
-    }
-  }
+//   for (const mac of macAddresses) {
+//     const result = await getMacAddresses(mac);
+//     if (Array.isArray(result) && result.length > 0 && Array.isArray(result[1])) {
+//       foundMacAddresses.push({ macAddress: mac, table: result[1] });
+//     } else {
+//       notFoundMacAddresses.push(mac);
+//     }
+//   }
 
-  res.json({
-    success: true,
-    foundMacAddresses,
-    notFoundMacAddresses
-  });
-});
+//   res.json({
+//     success: true,
+//     foundMacAddresses,
+//     notFoundMacAddresses
+//   });
+// });
 
 // Serve static files from the React build directory 
 app.use(express.static(path.join(__dirname, '../front-end/build')));
@@ -343,3 +349,62 @@ app.get('*', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
+
+const getMacAddressesPost = async (macAddresses) => {
+    const { username, password, serviceNowInstance } = serviceNowCredentials;
+    const auth = Buffer.from(`${username}:${password}`).toString('base64');
+  
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Basic ' + auth
+      }
+    };
+  
+    const queries = macAddresses.map(mac => `mac_addressLIKE${mac}`).join('^OR');
+    const endpoint = `https://${serviceNowInstance}/api/now/table/cmdb_ci?sysparm_query=${queries}&sysparm_fields=mac_address,sys_class_name,sys_id`;
+  
+    try {
+      const response = await axios.get(endpoint, config);
+      return response.data.result;
+    } catch (error) {
+      console.error('Error fetching MAC addresses:', error);
+      return [];
+    }
+  };
+  
+  app.post('/receive-data', async (req, res) => {
+    const { macAddresses } = req.body;
+    console.log('Received MAC addresses:', macAddresses);
+  
+    if (!Array.isArray(macAddresses) || macAddresses.length !== 5) {
+      return res.status(400).json({ success: false, message: 'Please provide exactly 5 MAC addresses' });
+    }
+  
+    const foundMacAddresses = [];
+    const notFoundMacAddresses = [];
+  
+    const results = await getMacAddressesPost(macAddresses);
+  
+    macAddresses.forEach(mac => {
+      const matchingResults = results.filter(result => result.mac_address === mac);
+      if (matchingResults.length > 0) {
+        foundMacAddresses.push({
+          macAddress: mac,
+          tables: matchingResults.map(result => ({
+            table: result.sys_class_name,
+            sys_id: result.sys_id
+          }))
+        });
+      } else {
+        notFoundMacAddresses.push(mac);
+      }
+    });
+  
+    res.json({
+      success: true,
+      foundMacAddresses,
+      notFoundMacAddresses
+    });
+  });

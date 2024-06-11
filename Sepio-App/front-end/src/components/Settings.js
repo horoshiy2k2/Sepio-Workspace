@@ -119,13 +119,13 @@
 //             </div>
 //           </div>
 //           <Button label="Test Connection" icon="pi pi-check" onClick={testConnection} style={{ backgroundColor: '#183462', borderColor: '#183462' }} />
-          
+
 //           <div>
 //           {message && (
 //             <Message text={message} style={{ marginTop: '20px' }} />
 //           )}
 //           </div>
-          
+
 //         </div>
 //       </div>
 
@@ -136,11 +136,12 @@
 
 
 
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { Menubar } from 'primereact/menubar';
 import { InputText } from 'primereact/inputtext';
 import { Avatar } from 'primereact/avatar';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from 'primereact/button';
 import {
   CSidebar, CSidebarNav, CNavItem, CContainer
@@ -166,6 +167,24 @@ export default function Layout() {
   const [sepioMessage, setSepioMessage] = useState('');
 
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Функція для отримання даних з сервера
+  const fetchData = async () => {
+    try {
+      const response = await axios.get('/get-source');
+      setServiceNowInstance(response.data.serviceNowInstance);
+      setUsername(response.data.username);
+      setPassword(response.data.password);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  // Виконання fetchData при зміні маршруту
+  useEffect(() => {
+    fetchData();
+  }, [location]);
 
   const handleStartClick = () => {
     navigate('/querytool');
@@ -207,7 +226,7 @@ export default function Layout() {
         setSepioMessage(response.data.message);
       }
     } catch (error) {
-      setSepioMessage('Connection failed! Please check your credentials and try again.');
+      setSepioMessage('Connection failed. Please check your credentials and try again.');
     }
   };
 
@@ -290,7 +309,7 @@ export default function Layout() {
             <Button label="Test Connection" icon="pi pi-check" onClick={testConnection} style={{ backgroundColor: '#183462', borderColor: '#183462', marginBottom: '20px', width: '35%' }} />
 
             <div style={{ marginTop: '20px' }}></div>
-{/* 
+            {/* 
             <h3>Sepio Credentials</h3>
             <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '20px' }}>
               <InputText
@@ -322,6 +341,7 @@ export default function Layout() {
     </div>
   );
 }
+
 
 
 
