@@ -400,10 +400,6 @@ app.post('/receive-data', async (req, res) => {
   const { password } = req.body;
   console.log('Received MAC addresses:', macAddresses);
 
-  // if (!Array.isArray(macAddresses) || macAddresses.length !== 5) {
-  //   return res.status(400).json({ success: false, message: 'Please provide exactly 5 MAC addresses' });
-  // }
-
   const foundMacAddresses = [];
   const notFoundMacAddresses = [];
 
