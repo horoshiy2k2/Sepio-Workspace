@@ -165,14 +165,20 @@ const getMacAddresses = async (macAddress) => {
 
     const response = await axios.get(endpoint, config);
 
-    const queryResults = response.data.result;
+    if (response.status === 200) {
 
-    console.log('Filtered MAC addresses:', queryResults);
+      const queryResults = response.data.result;
 
-    return queryResults;
+      console.log('Filtered MAC addresses:', queryResults);
 
+      return queryResults;
+
+    } else {
+      res.status(500).json({ success: false, message: 'Connection failed!' });
+    }
   } catch (error) {
     console.error('Error fetching MAC addresses:', error);
+    res.status(500).json({ success: false, message: 'Connection failed!', error: error.message });
     return [];
   }
 };
