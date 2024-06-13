@@ -95,7 +95,11 @@ app.post('/check-connection', async (req, res) => {
 app.post('/check-sepio-connection', async (req, res) => {
   let { sepioEndpoint, sepioUsername, sepioPassword } = req.body;
   sepioCredentials = { sepioEndpoint, sepioUsername, sepioPassword };
-  sepioCredentialsAvailable = true;
+  
+  if(sepioEndpoint && sepioUsername && sepioPassword) {
+    sepioCredentialsAvailable = true;
+  }
+
 
   console.log("sepioEndpoint > " + sepioEndpoint);
 
