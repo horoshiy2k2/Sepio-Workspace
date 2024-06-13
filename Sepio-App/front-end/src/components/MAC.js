@@ -232,7 +232,7 @@ export default function Layout() {
 
             <Menubar start={start} end={end} />
 
-            <CSidebar className='border-end custom-sidebar'>
+            <CSidebar className='border-end custom-sidebar' visible={true} style={{ height: '100vh', position: 'sticky', top: '0' }}>
                 <CSidebarNav>
                     <CContainer fluid>
                         <CForm className='d-flex'>

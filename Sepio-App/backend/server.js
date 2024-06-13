@@ -95,13 +95,14 @@ app.post('/check-connection', async (req, res) => {
 app.post('/check-sepio-connection', async (req, res) => {
   let { sepioEndpoint, sepioUsername, sepioPassword } = req.body;
   sepioCredentials = { sepioEndpoint, sepioUsername, sepioPassword };
-  
-  if(sepioEndpoint && sepioUsername && sepioPassword) {
-    sepioCredentialsAvailable = true;
-  } else {
-    sepioCredentialsAvailable = false;
-  }
 
+  // if(sepioEndpoint && sepioUsername && sepioPassword) {
+  //   sepioCredentialsAvailable = true;
+  // } else {
+  //   sepioCredentialsAvailable = false;
+  // }
+
+  sepioCredentialsAvailable = (sepioEndpoint != "" && sepioUsername != "" && sepioPassword != "");
 
   console.log("sepioEndpoint > " + sepioEndpoint);
 
@@ -178,74 +179,78 @@ const getMacAddresses = async (macAddress) => {
 
 const getSepioToken = async () => {
 
-  console.log("TOKEN: we are here!");
+  if (sepioCredentialsAvailable == true) {
+    console.log("TOKEN: we are here!");
 
-  let { sepioEndpoint, sepioUsername, sepioPassword } = sepioCredentials;
+    let { sepioEndpoint, sepioUsername, sepioPassword } = sepioCredentials;
 
-  var requestBody = {
-    "username": sepioUsername,
-    "password": sepioPassword
-  };
+    var requestBody = {
+      "username": sepioUsername,
+      "password": sepioPassword
+    };
 
-  const config = {
-    headers: {
-      'Content-Type': 'application/json',
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    };
+
+    try {
+      const response = await axios.post(`https://${sepioEndpoint}/prime/webui/Auth/LocalLogin`, requestBody, config);
+
+      console.log(response.data.token);
+
+      return response.data.token;
+    } catch (error) {
+      console.error('Error getting token from Sepio:', error);
+      throw error;
     }
-  };
-
-  try {
-    const response = await axios.post(`https://${sepioEndpoint}/prime/webui/Auth/LocalLogin`, requestBody, config);
-
-    console.log(response.data.token);
-
-    return response.data.token;
-  } catch (error) {
-    console.error('Error getting token from Sepio:', error);
-    throw error;
   }
 };
 
 const addTagsToSepioElements = async (elementSpecifier, tagsList, token) => {
 
-  let { sepioEndpoint, sepioUsername, sepioPassword } = sepioCredentials;
+  if (sepioCredentialsAvailable == true) {
+    let { sepioEndpoint, sepioUsername, sepioPassword } = sepioCredentials;
 
-  console.log("SEPIO TAG: we are here!");
+    console.log("SEPIO TAG: we are here!");
 
-  var tagsNames = [];
+    var tagsNames = [];
 
-  var tagsNames = tagsList.map(item => item);
+    var tagsNames = tagsList.map(item => item);
 
-  const generalToken = tagsNames.length == 0 ? "not_incmdb" : "in_cmdb";
+    const generalToken = tagsNames.length == 0 ? "not_incmdb" : "in_cmdb";
 
-  tagsNames.push(generalToken);
+    tagsNames.push(generalToken);
 
-  var requestBody = {
-    "tagNames": tagsNames,
-    "elementKeys": [elementSpecifier],
-    "function": 0,
-    "processChildren": false
-  };
+    var requestBody = {
+      "tagNames": tagsNames,
+      "elementKeys": [elementSpecifier],
+      "function": 0,
+      "processChildren": false
+    };
 
 
 
-  const config = {
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + token
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      }
+    };
+
+    try {
+      const response = await axios.post(`https://${sepioEndpoint}/prime/webui/tagsApi/tags/add-or-remove-tags-to-elements`, requestBody, config);
+
+      console.log("response.status > " + response.status);
+
+      return response;
+
+    } catch (error) {
+
+      console.error('Error adding tags to Sepio elements:', error);
+      throw error;
     }
-  };
-
-  try {
-    const response = await axios.post(`https://${sepioEndpoint}/prime/webui/tagsApi/tags/add-or-remove-tags-to-elements`, requestBody, config);
-
-    console.log("response.status > " + response.status);
-
-    return response;
-
-  } catch (error) {
-
-    console.error('Error adding tags to Sepio elements:', error);
-    throw error;
   }
 };
 
@@ -263,9 +268,7 @@ app.post('/api/check-mac', async (req, res) => {
 
         let responce = [];
 
-        if (sepioCredentialsAvailable) {
-          const token = await getSepioToken();
-        }
+        const token = await getSepioToken();
 
         for (const singleMac of macAddress) {
 
@@ -293,9 +296,7 @@ app.post('/api/check-mac', async (req, res) => {
           console.log("singleMac > " + singleMac);
           console.log("macAndTables.tables > " + macAndTables.tables);
 
-          if (sepioCredentialsAvailable) {
-            const responceFromTagAPI = await addTagsToSepioElements(singleMac, macAndTables.tables, token);
-          }
+          const responceFromTagAPI = await addTagsToSepioElements(singleMac, macAndTables.tables, token);
 
           responce.push(macAndTables);
 
