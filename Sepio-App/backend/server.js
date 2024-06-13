@@ -41,6 +41,7 @@ app.use(cors());
 // Routes
 let serviceNowCredentials = {};
 let sepioCredentials = {};
+let sepioCredentialsAvailable = false;
 
 // app.get('/', (req, res) => {
 //   res.sendFile(path.join(__dirname, 'index.html'));
@@ -94,6 +95,7 @@ app.post('/check-connection', async (req, res) => {
 app.post('/check-sepio-connection', async (req, res) => {
   let { sepioEndpoint, sepioUsername, sepioPassword } = req.body;
   sepioCredentials = { sepioEndpoint, sepioUsername, sepioPassword };
+  sepioCredentialsAvailable = true;
 
   console.log("sepioEndpoint > " + sepioEndpoint);
 
@@ -200,7 +202,7 @@ const getSepioToken = async () => {
 const addTagsToSepioElements = async (elementSpecifier, tagsList, token) => {
 
   let { sepioEndpoint, sepioUsername, sepioPassword } = sepioCredentials;
-  
+
   console.log("SEPIO TAG: we are here!");
 
   var tagsNames = [];
@@ -218,7 +220,7 @@ const addTagsToSepioElements = async (elementSpecifier, tagsList, token) => {
     "processChildren": false
   };
 
-  
+
 
   const config = {
     headers: {
@@ -255,7 +257,11 @@ app.post('/api/check-mac', async (req, res) => {
 
         let responce = [];
 
-        const token = await getSepioToken();
+        if (sepioCredentialsAvailable) {
+          const token = await getSepioToken();
+        }
+
+
 
         for (const singleMac of macAddress) {
 
@@ -284,7 +290,9 @@ app.post('/api/check-mac', async (req, res) => {
           console.log("singleMac > " + singleMac);
           console.log("macAndTables.tables > " + macAndTables.tables);
 
-          const responceFromTagAPI = await addTagsToSepioElements(singleMac, macAndTables.tables, token);
+          if (sepioCredentialsAvailable) {
+            const responceFromTagAPI = await addTagsToSepioElements(singleMac, macAndTables.tables, token);
+          }
 
           responce.push(macAndTables);
 
