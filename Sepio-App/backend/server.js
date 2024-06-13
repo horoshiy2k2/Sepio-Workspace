@@ -278,6 +278,10 @@ app.post('/api/check-mac', async (req, res) => {
 
         for (const singleMac of macAddress) {
 
+          if (singleMac == "") {
+            res.status(500).json({ success: false, message: "Remove empty strings or invalid characters from your search bar!" });
+          }
+
           let macAndTables = {
             "macAddress": "",
             "tables": []
