@@ -16,20 +16,6 @@ show_header() {
     echo "====================================" | lolcat
     figlet -c Sepio Installer | lolcat
     echo "====================================" | lolcat
-    echo "          /\        " | lolcat
-    echo "         /  \       " | lolcat
-    echo "        /____\      " | lolcat
-    echo "        |    |      " | lolcat
-    echo "        |____|      " | lolcat
-    echo "        |    |      " | lolcat
-    echo "        |____|      " | lolcat
-    echo "       /|    |\     " | lolcat
-    echo "      / |    | \    " | lolcat
-    echo "     /  |____|  \   " | lolcat
-    echo "         /\/\       " | lolcat
-    echo "        /    \      " | lolcat
-    echo "       /      \     " | lolcat
-    echo "====================================" | lolcat
 }
 
 show_header
