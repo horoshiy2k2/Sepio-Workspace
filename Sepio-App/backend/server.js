@@ -98,6 +98,8 @@ app.post('/check-sepio-connection', async (req, res) => {
   
   if(sepioEndpoint && sepioUsername && sepioPassword) {
     sepioCredentialsAvailable = true;
+  } else {
+    sepioCredentialsAvailable = false;
   }
 
 
@@ -265,8 +267,6 @@ app.post('/api/check-mac', async (req, res) => {
           const token = await getSepioToken();
         }
 
-
-
         for (const singleMac of macAddress) {
 
           let macAndTables = {
@@ -280,7 +280,6 @@ app.post('/api/check-mac', async (req, res) => {
 
               macAndTables.tables.push(assetWithCmdbInfo.sys_class_name);
             }
-
           }
 
           if (macAndTables.tables.length == 0) {
