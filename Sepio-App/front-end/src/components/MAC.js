@@ -310,9 +310,9 @@ export default function Layout() {
             {foundMacAddresses.length > 0 && (
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '20px', width: '100%', marginLeft: '100px' }}>
                     {foundMacAddresses.map((item, index) => (
-                        <div key={index} style={{ marginBottom: '20px', width: '90%', maxWidth: '900px' }}>
+                        <div key={index} style={{ marginBottom: '20px', width: '90%', maxWidth: '600px' }}>
                             <h4 style={{ textAlign: 'center' }}>{item.macAddress}</h4>
-                            <DataTable value={[item]} responsiveLayout="scroll" style={{ width: '100%', minWidth: '650px' }}>
+                            <DataTable value={[item]} responsiveLayout="scroll" style={{ width: '100%', minWidth: '400px'}}>
                                 <Column field="macAddressStatus" header="MAC Address Status" style={{ minWidth: '300px', width: '60%' }} />
                                 <Column field="tables" header="Found In" body={(rowData) => rowData.tables.join(", ")} style={{ minWidth: '300px', width: '40%' }} />
                             </DataTable>
