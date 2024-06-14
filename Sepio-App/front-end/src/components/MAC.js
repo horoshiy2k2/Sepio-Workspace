@@ -163,6 +163,7 @@ export default function Layout() {
     const [responseMessage, setResponseMessage] = useState('');
     const [foundMacAddresses, setFoundMacAddresses] = useState([]);
     const [inputWidth, setInputWidth] = useState('300px'); // Initial width for the input field
+    const [marginLeft, setMarginLeft] = useState('auto'); 
     const toast = useRef(null);
 
     const handleLogout = () => {
@@ -228,10 +229,13 @@ export default function Layout() {
         const windowWidth = window.innerWidth;
         if (windowWidth <= 280) {
             setInputWidth('-10px'); // Adjust width for smaller screens
+           setMarginLeft('10px');
         } else if (windowWidth <= 868) {
             setInputWidth('10px'); // Adjust width for medium screens
+            setMarginLeft('50px');
         } else {
             setInputWidth('400px'); // Default width for larger screens
+            setMarginLeft('auto');
         }
     };
 
@@ -308,11 +312,11 @@ export default function Layout() {
             )}
 
             {foundMacAddresses.length > 0 && (
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '20px', width: '100%', marginLeft: '100px' }}>
+                <div style={{  marginLeft: marginLeft, display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '20px', width: '100%', marginLeft: '100px' }}>
                     {foundMacAddresses.map((item, index) => (
                         <div key={index} style={{ marginBottom: '20px', width: '90%', maxWidth: '600px' }}>
                             <h4 style={{ textAlign: 'center' }}>{item.macAddress}</h4>
-                            <DataTable value={[item]} responsiveLayout="scroll" style={{ width: '100%', minWidth: '400px'}}>
+                            <DataTable value={[item]} responsiveLayout="scroll" style={{ marginLeft: marginLeft, width: '100%', minWidth: '400px'}}>
                                 <Column field="macAddressStatus" header="MAC Address Status" style={{ minWidth: '300px', width: '60%' }} />
                                 <Column field="tables" header="Found In" body={(rowData) => rowData.tables.join(", ")} style={{ minWidth: '300px', width: '40%' }} />
                             </DataTable>
