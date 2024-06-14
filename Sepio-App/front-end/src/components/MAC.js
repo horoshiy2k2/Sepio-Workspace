@@ -142,7 +142,7 @@
 
 
 //new
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Menubar } from 'primereact/menubar';
 import { Button } from 'primereact/button';
 import { useNavigate } from 'react-router-dom';
@@ -162,25 +162,31 @@ export default function Layout() {
     const [searchQuery, setSearchQuery] = useState('');
     const [responseMessage, setResponseMessage] = useState('');
     const [foundMacAddresses, setFoundMacAddresses] = useState([]);
-    const toast = React.useRef(null);
+    const [inputWidth, setInputWidth] = useState('300px'); // Initial width for the input field
+    const toast = useRef(null);
+
     const handleLogout = () => {
         navigate('/');
-    }
+    };
 
     const handleStartClick = () => {
         navigate('/querytool');
     };
-    
+
     const showError = (message) => {
         toast.current.show({ severity: 'error', summary: 'Error', detail: message, life: 3000 });
     };
+
     const handlePostMac = async () => {
         try {
 
-
-
             if (searchQuery.trim() === '') {
                 showError('Please enter at least one MAC address.');
+                return;
+            }
+
+            if (searchQuery.split(",").indexOf("") >= 0) {
+                showError('Please, remove extra comma(s) from your search bar!');
                 return;
             }
 
@@ -192,23 +198,52 @@ export default function Layout() {
 
             const responce = await axios.post('/api/check-mac', { macAddress: macAddresses });
 
-            console.log("post responce > " + responce.data.tables);
+            if (responce.status === 400) {
+                console.log("post responce from server > " + responce.data.message);
+                showError(responce.data.message);
+            } else {
+                const newFoundMacAddresses = responce.data.map((response, index) => ({
+                    macAddress: macAddresses[index],
+                    macAddressStatus: response.macAddress,
+                    tables: response.tables || []
+                }));
 
-            const newFoundMacAddresses = responce.data.map((response, index) => ({
-                macAddress: macAddresses[index],
-                macAddressStatus: response.macAddress,
-                tables: response.tables || []
-            }));
 
-            
-            setFoundMacAddresses(newFoundMacAddresses);
-            showSuccess('Search completed');
+                setFoundMacAddresses(newFoundMacAddresses);
+                showSuccess('Search completed');
+            }
+
+
+
+
         } catch (error) {
             console.error('Error posting MAC address:', error);
             showError('Error occurred while checking MAC address.');
             setFoundMacAddresses([]);
         }
     }
+
+    // Function to handle resizing and adjust input width
+    const handleResize = () => {
+        const windowWidth = window.innerWidth;
+        if (windowWidth <= 280) {
+            setInputWidth('-10px'); // Adjust width for smaller screens
+        } else if (windowWidth <= 868) {
+            setInputWidth('10px'); // Adjust width for medium screens
+        } else {
+            setInputWidth('400px'); // Default width for larger screens
+        }
+    };
+
+    // Effect to add and remove resize event listener
+    useEffect(() => {
+        window.addEventListener('resize', handleResize);
+        handleResize(); // Initial call to set input width based on window size
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
 
     const start = (
         <>
@@ -228,10 +263,8 @@ export default function Layout() {
 
     return (
         <div>
-<Toast ref = {toast}/>
-
+            <Toast ref={toast} />
             <Menubar start={start} end={end} />
-
             <CSidebar className='border-end custom-sidebar' visible={true} style={{ height: '100vh', position: 'sticky', top: '0' }}>
                 <CSidebarNav>
                     <CContainer fluid>
@@ -253,15 +286,27 @@ export default function Layout() {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search MAC"
-                    style={{ width: `${(searchQuery.length < 45 ? 45 : searchQuery.length) * 8 + 20}px`, minWidth: '600px' }} // Adjusting width dynamically
+                    style={{
+                        width: inputWidth,
+                        minWidth: '200px', // Minimum width to prevent very narrow inputs
+                        maxWidth: '600px', // Maximum width to limit overly wide inputs
+                        transition: 'width 0.3s ease'
+                    }}
                 />
-                <Button label='Search' icon='pi pi-search' onClick={handlePostMac} style={{ backgroundColor: '#183462', borderColor: '183462', marginLeft: '0px' }} />
+                <Button
+                    label='Search'
+                    icon='pi pi-search'
+                    onClick={handlePostMac}
+                    style={{ backgroundColor: '#183462', borderColor: '183462', marginLeft: '10px' }}
+                />
             </div>
+
             {responseMessage && (
-                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', marginLeft: '140px', color: responseMessage.includes('Please enter') ? 'red' : 'green' }}>
+                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', color: responseMessage.includes('Please enter') ? 'red' : 'green' }}>
                     {responseMessage}
                 </div>
             )}
+
             {foundMacAddresses.length > 0 && (
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '20px', width: '100%', marginLeft: '100px' }}>
                     {foundMacAddresses.map((item, index) => (

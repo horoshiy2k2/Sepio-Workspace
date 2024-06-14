@@ -166,6 +166,8 @@ export default function Layout() {
   const [sepioUsername, setSepioUsername] = useState('');
   const [sepioPassword, setSepioPassword] = useState('');
   const [sepioMessage, setSepioMessage] = useState('');
+  const [inputWidth, setInputWidth] = useState('100%'); // Initial width for larger screens
+  const [marginLeft, setMarginLeft] = useState('auto');
   const toast = React.useRef(null);
 
   const navigate = useNavigate();
@@ -195,7 +197,7 @@ export default function Layout() {
 
   const showSuccess = (message) => {
     toast.current.show({ severity: 'success', summary: 'Success', detail: message, life: 3000 });
-};
+  };
 
   // Виконання fetchData при зміні маршруту
   useEffect(() => {
@@ -212,6 +214,12 @@ export default function Layout() {
 
   const testConnection = async () => {
     try {
+
+      if (serviceNowInstance.indexOf("http") >= 0) {
+        showError('Please, provide endpoint without «http(s)://»');
+        return;
+      }
+
       const response = await axios.post('/check-connection', {
         serviceNowInstance,
         username,
@@ -230,6 +238,12 @@ export default function Layout() {
 
   const testSepioConnection = async () => {
     try {
+
+      if (sepioEndpoint.indexOf("http") >= 0) {
+        showError('Please, provide endpoint without «http(s)://»');
+        return;
+      }
+
       const response = await axios.post('/check-sepio-connection', {
         sepioEndpoint,
         sepioUsername,
@@ -266,6 +280,34 @@ export default function Layout() {
     </div>
   );
 
+  const handleResize = () => {
+    const windowWidth = window.innerWidth;
+    if (windowWidth <= 280) {
+      setInputWidth('calc(100% - 10px)'); // Adjust width for smaller screens
+      setMarginLeft('10px'); // Move to the right on smaller screens
+    } else if (windowWidth <= 968) {
+      setInputWidth('calc(100% - 50px)'); // Adjust width for medium screens
+      setMarginLeft('140px'); // Move to the right on medium screens
+    } else {
+      setInputWidth('100%'); // Default width for larger screens
+      setMarginLeft('auto'); // Center align on larger screens
+    }
+  };
+
+  // Effect hook to add and remove resize event listener
+  useEffect(() => {
+    window.addEventListener('resize', handleResize);
+    handleResize(); // Initial call to set input width based on window size
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+
+
+
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
       <Toast ref={toast} />
@@ -285,7 +327,7 @@ export default function Layout() {
           </CSidebarNav>
         </CSidebar>
 
-        <div style={{ flex: '1', padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+        <div style={{ marginLeft: marginLeft, flex: '1', padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
           <div style={{ width: '70%', maxWidth: '600px', minWidth: '300px', padding: '20px', borderRadius: '8px', boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)', backgroundColor: 'white' }}>
             <div style={{ marginBottom: '20px' }}>
               {message && (
@@ -306,21 +348,21 @@ export default function Layout() {
                 placeholder="ServiceNow Instance"
                 value={serviceNowInstance}
                 onChange={(e) => setServiceNowInstance(e.target.value)}
-                style={{ marginBottom: '10px', width: '100%' }}
+                style={{ marginBottom: '10px', width: inputWidth, }}
               />
               <InputText
                 type="text"
                 placeholder="Username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                style={{ marginBottom: '10px', width: '100%' }}
+                style={{ marginBottom: '10px', width: inputWidth }}
               />
               <InputText
                 type="password"
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                style={{ marginBottom: '10px', width: '100%' }}
+                style={{ marginBottom: '10px', width: inputWidth }}
               />
             </div>
             <Button label="Test Connection" icon="pi pi-check" onClick={testConnection} style={{ backgroundColor: '#183462', borderColor: '#183462', marginBottom: '20px', width: '35%' }} />
@@ -333,21 +375,21 @@ export default function Layout() {
                 placeholder="Sepio Endpoint"
                 value={sepioEndpoint}
                 onChange={(e) => setSepioEndpoint(e.target.value)}
-                style={{ marginBottom: '10px', width: '100%' }}
+                style={{ marginBottom: '10px', width: inputWidth }}
               />
               <InputText
                 type="text"
                 placeholder="Username"
                 value={sepioUsername}
                 onChange={(e) => setSepioUsername(e.target.value)}
-                style={{ marginBottom: '10px', width: '100%' }}
+                style={{ marginBottom: '10px', width: inputWidth }}
               />
               <InputText
                 type="password"
                 placeholder="Password"
                 value={sepioPassword}
                 onChange={(e) => setSepioPassword(e.target.value)}
-                style={{ marginBottom: '10px', width: '100%' }}
+                style={{ marginBottom: '10px', width: inputWidth }}
               />
             </div>
             <Button label="Test Connection" icon="pi pi-check" onClick={testSepioConnection} style={{ backgroundColor: '#183462', borderColor: '#183462', width: '35%' }} />
@@ -357,6 +399,9 @@ export default function Layout() {
     </div>
   );
 }
+
+
+
 
 
 
