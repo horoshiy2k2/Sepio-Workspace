@@ -408,95 +408,92 @@ app.listen(PORT, () => {
 
 const getSepioTokenPost = async (sepioEndpoint, sepioPassword, sepioLogin) => {
 
-  if (sepioEndpoint) {
+  console.log("Started sepio token retrieving process");
 
-    console.log("Started sepio token retrieving process");
+  //let { sepioEndpoint, sepioUsername, sepioPassword } = sepioCredentials;
 
-    //let { sepioEndpoint, sepioUsername, sepioPassword } = sepioCredentials;
+  var requestBody = {
+    "username": sepioLogin,
+    "password": sepioPassword
+  };
 
-    var requestBody = {
-      "username": sepioLogin,
-      "password": sepioPassword
-    };
+  const config = {
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  };
 
-    const config = {
-      headers: {
-        'Content-Type': 'application/json',
-      }
-    };
+  try {
+    const response = await axios.post(`https://${sepioEndpoint}/prime/webui/Auth/LocalLogin`, requestBody, config);
 
-    try {
-      const response = await axios.post(`https://${sepioEndpoint}/prime/webui/Auth/LocalLogin`, requestBody, config);
+    console.log(response.data.token);
 
-      console.log(response.data.token);
-
-      if (response.status === 200) {
-        console.log('Successfully got token from Sepio: ' + response.data.token);
-        return response.data.token;
-      } else {
-        console.error('Error getting token from Sepio: \nStatus code: ' + response.status + "\nError message: " + response.data);
-        throw error;
-      }
-
-    } catch (error) {
-      console.error('Error getting token from Sepio: ', error);
+    if (response.status === 200) {
+      console.log('Successfully got token from Sepio: ' + response.data.token);
+      return response.data.token;
+    } else {
+      console.error('Error getting token from Sepio: \nStatus code: ' + response.status + "\nError message: " + response.data);
       throw error;
     }
+
+  } catch (error) {
+    console.error('Error getting token from Sepio: ', error);
+    throw error;
   }
 };
 
 const addTagsToSepioElementsPost = async (foundMacAddresses, token, sepioEndpoint) => {
 
-  if (sepioEndpoint) {
-    //let { sepioEndpoint, sepioUsername, sepioPassword } = sepioCredentials;
+  //if (sepioEndpoint) {
+  //let { sepioEndpoint, sepioUsername, sepioPassword } = sepioCredentials;
 
-    //console.log("SEPIO TAG: we are here!");
+  //console.log("SEPIO TAG: we are here!");
 
-    for (const singleMacInfo of foundMacAddresses) {
+  for (const singleMacInfo of foundMacAddresses) {
 
-      var tagsNames = [];
+    var tagsNames = [];
 
-      var tagsNames = singleMacInfo.tables.map(item => item.table);
+    var tagsNames = singleMacInfo.tables.map(item => item.table);
 
-      console.log("tagsNames > " + tagsNames);
+    console.log("tagsNames > " + tagsNames);
 
-      const generalToken = tagsNames.length == 0 ? "not_incmdb" : "in_cmdb";
+    const generalToken = tagsNames.length == 0 ? "not_incmdb" : "in_cmdb";
 
-      tagsNames.push(generalToken);
+    tagsNames.push(generalToken);
 
-      var requestBody = {
-        "tagNames": tagsNames,
-        "elementKeys": [singleMacInfo.macAddress],
-        "function": 0,
-        "processChildren": false
-      };
+    var requestBody = {
+      "tagNames": tagsNames,
+      "elementKeys": [singleMacInfo.macAddress],
+      "function": 0,
+      "processChildren": false
+    };
 
-      const config = {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + token
-        }
-      };
-
-      //try {
-      const response = await axios.post(`https://${sepioEndpoint}/prime/webui/tagsApi/tags/add-or-remove-tags-to-elements`, requestBody, config);
-
-      if (response.status === 200) {
-
-        console.log("Adding tags process to element: " + singleMacInfo.macAddress + " is success!");
-
-        //return response;
-      } else {
-        console.error("Adding tags process to element: " + singleMacInfo.macAddress + " is failed! \nStatus code: " + response.status + "\nError message: " + response.data);
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
       }
+    };
 
+    //try {
+    const response = await axios.post(`https://${sepioEndpoint}/prime/webui/tagsApi/tags/add-or-remove-tags-to-elements`, requestBody, config);
+
+    if (response.status === 200) {
+
+      console.log("Adding tags process to element: " + singleMacInfo.macAddress + " is success!");
+
+      //return response;
+    } else {
+      console.error("Adding tags process to element: " + singleMacInfo.macAddress + " is failed! \nStatus code: " + response.status + "\nError message: " + response.data);
     }
-    // } catch (error) {
 
-    //   console.error('Error adding tags to Sepio elements:', error);
-    //   throw error;
-    // }
   }
+  // } catch (error) {
+
+  //   console.error('Error adding tags to Sepio elements:', error);
+  //   throw error;
+  // }
+  //}
 };
 
 
@@ -524,44 +521,79 @@ const getMacAddressesPost = async (macAddresses, targetEndpoint, userlogin, pass
 };
 
 app.post('/receive-data', async (req, res) => {
-  const { macAddresses } = req.body;
-  const { snEndpoint } = req.body;
-  const { userlogin } = req.body;
-  const { password } = req.body;
-  const { sepioEndpoint } = req.body;
-  const { sepioLogin } = req.body;
-  const { sepioPassword } = req.body;
 
-  console.log('Received MAC addresses:', macAddresses);
+  const { loginTest } = req.body;
+  const { passwordTest } = req.body;
 
-  const foundMacAddresses = [];
-  const notFoundMacAddresses = [];
+  if (loginTest == "admin" && passwordTest == "admin") {
+    const { macAddresses } = req.body;
+    const { snEndpoint } = req.body;
+    const { snUserlogin } = req.body;
+    const { snPassword } = req.body;
+    const { endpointSepio } = req.body;
+    const { loginSepio } = req.body;
+    const { passwordSepio } = req.body;
 
-  const results = await getMacAddressesPost(macAddresses, snEndpoint, userlogin, password);
+    let { sepioEndpoint, sepioUsername, sepioPassword } = sepioCredentials;
 
-  //macAddresses.forEach(mac => {
-    for (const mac of macAddresses) {
-    const matchingResults = results.filter(result => result.mac_address === mac && result.sys_class_name.indexOf("cmdb_ci") >= 0);
-    if (matchingResults.length > 0) {
-      foundMacAddresses.push({
-        macAddress: mac,
-        tables: matchingResults.map(result => ({
-          table: result.sys_class_name,
-          sys_id: result.sys_id
-        }))
+    let { username, password, serviceNowInstance } = serviceNowCredentials;
+
+    let snCredentialsIsAvailable = (username && password && serviceNowInstance) || (snEndpoint, snUserlogin, snPassword);
+    let sepioCredentialsIsAvailable = (sepioUsername && sepioPassword && sepioEndpoint) || (endpointSepio, loginSepio, passwordSepio);
+
+    if (snCredentialsIsAvailable) {
+
+      console.log('Received MAC addresses:', macAddresses);
+
+      const foundMacAddresses = [];
+      const notFoundMacAddresses = [];
+
+      let user = username ? username : snUserlogin;
+      let pass = password ? password : snPassword;
+      let endpoint = serviceNowInstance ? serviceNowInstance : snEndpoint;
+
+      const results = await getMacAddressesPost(macAddresses, endpoint, user, pass);
+
+      //macAddresses.forEach(mac => {
+      for (const mac of macAddresses) {
+        const matchingResults = results.filter(result => result.mac_address === mac && result.sys_class_name.indexOf("cmdb_ci") >= 0);
+        if (matchingResults.length > 0) {
+          foundMacAddresses.push({
+            macAddress: mac,
+            tables: matchingResults.map(result => ({
+              table: result.sys_class_name,
+              sys_id: result.sys_id
+            }))
+          });
+        } else {
+          notFoundMacAddresses.push(mac);
+        }
+
+        if (sepioCredentialsIsAvailable) {
+
+          let sepioUser = sepioUsername ? sepioUsername : loginSepio;
+          let sepioPass = sepioPassword ? sepioPassword : passwordSepio;
+          let endpointForSepio = sepioEndpoint ? sepioEndpoint : endpointSepio;
+
+          const token = await getSepioTokenPost(endpointForSepio, sepioPass, sepioUser);
+          const responceSepio = await addTagsToSepioElementsPost(foundMacAddresses, token, endpointForSepio);
+        }
+      }
+      res.json({
+        success: true,
+        foundMacAddresses,
+        notFoundMacAddresses
       });
     } else {
-      notFoundMacAddresses.push(mac);
+      res.status(500).json({
+        success: false,
+        error: "You should provide you ServiceNow credential in settings or in request body"
+      });
     }
-    const token = await getSepioTokenPost(sepioEndpoint, sepioPassword, sepioLogin);
-    const responceSepio = await addTagsToSepioElementsPost(foundMacAddresses, token, sepioEndpoint);
+  } else {
+    res.status(401).json({
+      success: false,
+      error: "You aren’t authenticated! Either not authenticated at all or authenticated incorrectly. Please check you login / password / endpoint"
+    });
   }
-
-
-
-  res.json({
-    success: true,
-    foundMacAddresses,
-    notFoundMacAddresses
-  });
 });
