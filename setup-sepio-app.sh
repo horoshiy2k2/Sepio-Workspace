@@ -150,9 +150,6 @@ npm update
 log "Installing latest eslint-webpack-plugin..."
 npm install eslint-webpack-plugin@latest --save-dev
 
-log "Preparing execute file Run_Sepio_QT.sh"
-chmod +x Run_Sepio_QT.sh
-
 read -p "Do you want to run the React build command now? (y/n): " run_build
 if [[ "$run_build" == "y" ]]; then
     npm run build
