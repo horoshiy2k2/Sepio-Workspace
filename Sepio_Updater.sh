@@ -45,26 +45,6 @@ fi
 
 log "Successfully pulled the latest changes from the repository."
 
-cd "$SEPIO_APP_DIR/backend" || { log "Error: Directory $SEPIO_APP_DIR/backend does not exist."; exit 1; }
-log "Installing backend dependencies..."
-npm install
-if [ $? -ne 0 ]; then
-    log "Error: Failed to install backend dependencies."
-    exit 1
-fi
-
-log "Backend dependencies installed successfully."
-
-cd "$SEPIO_APP_DIR/front-end" || { log "Error: Directory $SEPIO_APP_DIR/front-end does not exist."; exit 1; }
-log "Building the frontend..."
-npm run build
-if [ $? -ne 0 ]; then
-    log "Error: Failed to build the frontend."
-    exit 1
-fi
-
-log "Frontend built successfully."
-
 log "Restarting the backend server..."
 sudo systemctl restart node-server.service
 if [ $? -ne 0 ]; then
