@@ -196,7 +196,7 @@ log "Checking MySQL status..."
 sudo systemctl status mysql
 
 log "Checking MySQL port configuration..."
-mysql_port=$(sudo netstat -tuln | grep 3306)
+mysql_port=$(sudo ss -tln | grep ':3306 ')
 if [ -n "$mysql_port" ]; then
     log "MySQL is running on port 3306."
 else
@@ -218,7 +218,7 @@ log "Checking Redis status..."
 sudo systemctl status redis-server
 
 log "Checking Redis port configuration..."
-redis_port=$(sudo netstat -tuln | grep 6379)
+redis_port=$(sudo ss -tln | grep ':6379 ')
 if [ -n "$redis_port" ]; then
     log "Redis is running on port 6379."
 else
