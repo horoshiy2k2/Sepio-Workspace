@@ -312,7 +312,7 @@ export default function Layout() {
             )}
 
             {foundMacAddresses.length > 0 && (
-                <div style={{  marginLeft: marginLeft, display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '20px', width: '100%', marginLeft: '100px' }}>
+                <div style={{  marginLeft: marginLeft, display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '20px', width: '100%',  marginLeft: '70px' }}>
                     {foundMacAddresses.map((item, index) => (
                         <div key={index} style={{ marginBottom: '20px', width: '90%', maxWidth: '600px' }}>
                             <h4 style={{ textAlign: 'center' }}>{item.macAddress}</h4>
