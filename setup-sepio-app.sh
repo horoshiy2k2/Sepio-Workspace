@@ -223,7 +223,6 @@ else
     exit 1
 fi
 
-# Create systemd service for React build
 log "Creating systemd service for React build..."
 sudo bash -c "cat <<EOL > /etc/systemd/system/react-build.service
 [Unit]
@@ -231,8 +230,8 @@ Description=React Build Service
 After=network.target
 
 [Service]
+Type=oneshot
 ExecStart=/bin/bash -c 'cd $SEPIO_APP_DIR/front-end && npm run build'
-Restart=always
 User=$USER
 Environment=PATH=$PATH:/usr/local/bin
 Environment=NODE_ENV=production
@@ -242,7 +241,7 @@ WorkingDirectory=$SEPIO_APP_DIR/front-end
 WantedBy=multi-user.target
 EOL"
 
-# Create systemd service for server.js
+
 log "Creating systemd service for server.js..."
 sudo bash -c "cat <<EOL > /etc/systemd/system/node-server.service
 [Unit]
@@ -250,8 +249,8 @@ Description=Node.js Server
 After=network.target
 
 [Service]
+Type=oneshot
 ExecStart=/bin/bash -c 'cd $SEPIO_APP_DIR/backend && node server.js'
-Restart=always
 User=$USER
 Environment=PATH=$PATH:/usr/local/bin
 Environment=NODE_ENV=production
@@ -260,6 +259,7 @@ WorkingDirectory=$SEPIO_APP_DIR/backend
 [Install]
 WantedBy=multi-user.target
 EOL"
+
 
 log "Enabling and starting systemd services..."
 sudo systemctl daemon-reload
