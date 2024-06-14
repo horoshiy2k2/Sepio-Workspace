@@ -446,28 +446,31 @@ const getSepioTokenPost = async (sepioEndpoint, sepioPassword, sepioLogin) => {
 
 };
 
-const addTagsToSepioElementsPost = async (foundMacAddresses, token, sepioEndpoint) => {
+const addTagsToSepioElementsPost = async (foundMacAddresses, token, sepioEndpoint, macAddresses) => {
 
-  if (sepioEndpoint && foundMacAddresses && token) {
+  if (sepioEndpoint && (foundMacAddresses || notFoundMacAddresses) && token) {
     //let { sepioEndpoint, sepioUsername, sepioPassword } = sepioCredentials;
 
     //console.log("SEPIO TAG: we are here!");
 
-    for (const singleMacInfo of foundMacAddresses) {
+    for (var i = 0; i < macAddresses.length; i++) {
 
       var tagsNames = [];
+      
 
-      var tagsNames = singleMacInfo.tables.map(item => item.table);
+      if (foundMacAddresses.macAddress) {
+      var tagsNames = foundMacAddresses.macAddress.map(item => item.table);
+      var generalToken = foundMacAddresses.macAddress.indexOf(macAddresses[i]) >= 0 ? "in_cmdb" : "not_incmdb"; 
+      tagsNames.push(generalToken);
+    } else {
+      tagsNames.push("not_incmdb");
+    }
 
       console.log("tagsNames > " + tagsNames);
 
-      const generalToken = tagsNames.length == 0 ? "not_incmdb" : "in_cmdb";
-
-      tagsNames.push(generalToken);
-
       var requestBody = {
         "tagNames": tagsNames,
-        "elementKeys": [singleMacInfo.macAddress],
+        "elementKeys": [macAddresses[i]],
         "function": 0,
         "processChildren": false
       };
@@ -484,14 +487,15 @@ const addTagsToSepioElementsPost = async (foundMacAddresses, token, sepioEndpoin
 
       if (response.status === 200) {
 
-        console.log("Adding tags process to element: " + singleMacInfo.macAddress + " is success!");
+        console.log("Adding tags process to element: " + macAddresses[i] + " is success!");
 
         //return response;
       } else {
-        console.error("Adding tags process to element: " + singleMacInfo.macAddress + " is failed! \nStatus code: " + response.status + "\nError message: " + response.data);
+        console.error("Adding tags process to element: " + macAddresses[i] + " is failed! \nStatus code: " + response.status + "\nError message: " + response.data);
       }
 
     }
+
     // } catch (error) {
 
     //   console.error('Error adding tags to Sepio elements:', error);
@@ -580,7 +584,7 @@ app.post('/receive-data', async (req, res) => {
           let endpointForSepio = sepioEndpoint ? sepioEndpoint : endpointSepio;
 
           const token = await getSepioTokenPost(endpointForSepio, sepioPass, sepioUser);
-          const responceSepio = await addTagsToSepioElementsPost(foundMacAddresses, token, endpointForSepio);
+          const responceSepio = await addTagsToSepioElementsPost(macAddresses, token, endpointForSepio, macAddresses);
         }
       }
       res.json({
