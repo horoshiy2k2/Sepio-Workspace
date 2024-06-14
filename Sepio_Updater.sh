@@ -74,4 +74,13 @@ fi
 
 log "Backend server restarted successfully."
 
+log "Restarting the frontend build service..."
+sudo systemctl restart react-build.service
+if [ $? -ne 0 ]; then
+    log "Error: Failed to restart the frontend build service."
+    exit 1
+fi
+
+log "Frontend build service restarted successfully."
+
 log "Update script executed successfully."
