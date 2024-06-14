@@ -150,32 +150,6 @@ npm update
 log "Installing latest eslint-webpack-plugin..."
 npm install eslint-webpack-plugin@latest --save-dev
 
-read -p "Do you want to run the React build command now? (y/n): " run_build
-if [[ "$run_build" == "y" ]]; then
-    npm run build
-    if [ $? -ne 0 ]; then
-        log "Error: Failed to execute React build command."
-        exit 1
-    fi
-    log "React build completed successfully."
-else
-    log "Skipping React build command as per user request."
-fi
-
-cd "$SEPIO_APP_DIR/backend" || { log "Error: Directory $SEPIO_APP_DIR/backend does not exist."; exit 1; }
-read -p "Do you want to start server.js now? (y/n): " start_server
-if [[ "$start_server" == "y" ]]; then
-    log "Starting server.js..."
-    node server.js &
-    if [ $? -ne 0 ]; then
-        log "Error: Failed to start server.js."
-        exit 1
-    fi
-    log "server.js started successfully."
-else
-    log "Skipping server.js start as per user request."
-fi
-
 log "Installing MySQL server..."
 sudo apt-get update
 sudo apt-get install -y mysql-server
@@ -262,11 +236,22 @@ EOL"
 
 
 log "Enabling and starting systemd services..."
+
+log "Reloading systemd daemon to pick up the new service files..."
 sudo systemctl daemon-reload
+
+log "Enabling react-build.service to start on boot..."
 sudo systemctl enable react-build.service
+
+log "Starting react-build.service..."
 sudo systemctl start react-build.service
+
+log "Enabling node-server.service to start on boot..."
 sudo systemctl enable node-server.service
+
+log "Starting node-server.service..."
 sudo systemctl start node-server.service
+
 
 log "Setup script executed successfully."
 
