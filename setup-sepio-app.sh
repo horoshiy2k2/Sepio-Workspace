@@ -158,11 +158,11 @@ After=network.target
 
 [Service]
 Type=oneshot
-ExecStart=/bin/bash -c 'cd $SEPIO_APP_DIR/front-end && npm run build'
-User=$USER
-Environment=PATH=$PATH:/usr/local/bin
+ExecStart=/bin/bash -c 'cd \$SEPIO_APP_DIR/front-end && npm run build'
+User=\$USER
+Environment=PATH=\$PATH:/usr/local/bin
 Environment=NODE_ENV=production
-WorkingDirectory=$SEPIO_APP_DIR/front-end
+WorkingDirectory=\$SEPIO_APP_DIR/front-end
 
 [Install]
 WantedBy=multi-user.target
@@ -175,19 +175,16 @@ Description=Node.js Server
 After=network.target
 
 [Service]
-Type=oneshot
-ExecStart=/bin/bash -c 'cd $SEPIO_APP_DIR/backend && node server.js'
-User=$USER
-Environment=PATH=$PATH:/usr/local/bin
+Type=simple
+ExecStart=/bin/bash -c 'cd \$SEPIO_APP_DIR/backend && node server.js'
+User=\$USER
+Environment=PATH=\$PATH:/usr/local/bin
 Environment=NODE_ENV=production
-WorkingDirectory=$SEPIO_APP_DIR/backend
+WorkingDirectory=\$SEPIO_APP_DIR/backend
 
 [Install]
 WantedBy=multi-user.target
 EOL"
-
-
-log "Enabling and starting systemd services..."
 
 log "Reloading systemd daemon to pick up the new service files..."
 sudo systemctl daemon-reload
