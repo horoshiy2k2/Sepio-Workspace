@@ -150,53 +150,6 @@ npm update
 log "Installing latest eslint-webpack-plugin..."
 npm install eslint-webpack-plugin@latest --save-dev
 
-log "Installing MySQL server..."
-sudo apt-get update
-sudo apt-get install -y mysql-server
-
-log "Securing MySQL installation..."
-sudo mysql_secure_installation
-
-log "Starting MySQL service..."
-sudo systemctl start mysql
-
-log "Enabling MySQL service to start on boot..."
-sudo systemctl enable mysql
-
-log "Checking MySQL status..."
-sudo systemctl status mysql
-
-log "Checking MySQL port configuration..."
-mysql_port=$(sudo ss -tln | grep ':3306 ')
-if [ -n "$mysql_port" ]; then
-    log "MySQL is running on port 3306."
-else
-    log "Error: MySQL is not running on port 3306."
-    exit 1
-fi
-
-log "Installing Redis server..."
-sudo apt-get update
-sudo apt-get install -y redis-server
-
-log "Starting Redis service..."
-sudo systemctl start redis-server
-
-log "Enabling Redis service to start on boot..."
-sudo systemctl enable redis-server
-
-log "Checking Redis status... Please press Ctrl + C!"
-sudo systemctl status redis-server
-
-log "Checking Redis port configuration..."
-redis_port=$(sudo ss -tln | grep ':6379 ')
-if [ -n "$redis_port" ]; then
-    log "Redis is running on port 6379."
-else
-    log "Error: Redis is not running on port 6379."
-    exit 1
-fi
-
 log "Creating systemd service for React build..."
 sudo bash -c "cat <<EOL > /etc/systemd/system/react-build.service
 [Unit]
@@ -214,7 +167,6 @@ WorkingDirectory=$SEPIO_APP_DIR/front-end
 [Install]
 WantedBy=multi-user.target
 EOL"
-
 
 log "Creating systemd service for server.js..."
 sudo bash -c "cat <<EOL > /etc/systemd/system/node-server.service
