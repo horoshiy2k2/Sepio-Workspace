@@ -158,7 +158,7 @@ After=network.target
 
 [Service]
 Type=oneshot
-ExecStart=/bin/bash -c 'cd $SEPIO_APP_DIR/front-end && npm install && npm run build'
+ExecStart=/bin/bash -c 'cd $SEPIO_APP_DIR/front-end && npm run build'
 User=$USER
 Environment=PATH=$PATH:/usr/local/bin
 Environment=NODE_ENV=production
@@ -176,7 +176,7 @@ After=network.target
 
 [Service]
 Type=oneshot
-ExecStart=/bin/bash -c 'cd $SEPIO_APP_DIR/backend && npm install && node server.js'
+ExecStart=/bin/bash -c 'cd $SEPIO_APP_DIR/backend && node server.js'
 User=$USER
 Environment=PATH=$PATH:/usr/local/bin
 Environment=NODE_ENV=production
