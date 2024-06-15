@@ -192,7 +192,7 @@ sudo systemctl daemon-reload
 log "Enabling react-build.service to start on boot..."
 sudo systemctl enable react-build.service
 
-log "Starting react-build.service..."
+log "Starting react-build.service... Please be patient, don't break up the process..."
 sudo systemctl start react-build.service
 
 log "Enabling node-server.service to start on boot..."
