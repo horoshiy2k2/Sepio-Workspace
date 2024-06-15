@@ -29,11 +29,6 @@ log "Starting setup script..."
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
 SEPIO_APP_DIR="$SCRIPT_DIR/Sepio-App"
 
-log "Adding permissions to directories for user..."
-sudo chmod -R +rx $SEPIO_APP_DIR/front-end
-sudo chmod -R +rx $SEPIO_APP_DIR/backend
-
-
 if ! command -v git &> /dev/null; then
     log "Git is not installed. Installing Git..."
     sudo apt-get update
