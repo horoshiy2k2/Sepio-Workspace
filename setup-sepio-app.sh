@@ -29,6 +29,11 @@ log "Starting setup script..."
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
 SEPIO_APP_DIR="$SCRIPT_DIR/Sepio-App"
 
+log "Adding permissions to directories for user..."
+sudo chmod -R +rx $SEPIO_APP_DIR/front-end
+sudo chmod -R +rx $SEPIO_APP_DIR/backend
+
+
 if ! command -v git &> /dev/null; then
     log "Git is not installed. Installing Git..."
     sudo apt-get update
@@ -158,11 +163,11 @@ After=network.target
 
 [Service]
 Type=oneshot
-ExecStart=/bin/bash -c 'cd \$SEPIO_APP_DIR/front-end && npm run build'
-User=\$USER
-Environment=PATH=\$PATH:/usr/local/bin
+ExecStart=/bin/bash -c 'cd $SEPIO_APP_DIR/front-end && npm run build'
+User=$USER
+Environment=PATH=$PATH:/usr/local/bin
 Environment=NODE_ENV=production
-WorkingDirectory=\$SEPIO_APP_DIR/front-end
+WorkingDirectory=$SEPIO_APP_DIR/front-end
 
 [Install]
 WantedBy=multi-user.target
@@ -176,11 +181,11 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=/bin/bash -c 'cd \$SEPIO_APP_DIR/backend && node server.js'
-User=\$USER
-Environment=PATH=\$PATH:/usr/local/bin
+ExecStart=/bin/bash -c 'cd $SEPIO_APP_DIR/backend && node server.js'
+User=$USER
+Environment=PATH=$PATH:/usr/local/bin
 Environment=NODE_ENV=production
-WorkingDirectory=\$SEPIO_APP_DIR/backend
+WorkingDirectory=$SEPIO_APP_DIR/backend
 
 [Install]
 WantedBy=multi-user.target
