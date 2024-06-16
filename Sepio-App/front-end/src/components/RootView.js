@@ -1,16 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Menubar } from 'primereact/menubar';
 import { Avatar } from 'primereact/avatar';
 import { useNavigate } from 'react-router-dom';
+import { Button } from 'primereact/button';
+import { Menu } from 'primereact/menu';
 import { NavLink } from 'react-router-dom';
 import { CSidebar, CSidebarNav, CNavItem, CContainer, CForm } from '@coreui/react';
 import { RiDashboardLine } from 'react-icons/ri';
 import SepioLogo from './../image/Sepio_Logo.png';
 import SepioMainLogo from './../image/QueryTool.png';
 
-export default function Layout() {
+export default function Layout({icon_username}) {
     const navigate = useNavigate();
-    const [logoHeight, setLogoHeight] = useState('60px');
+	const [logoHeight, setLogoHeight] = useState('60px');
 
     const handleLogout = () => {
         navigate('/');
@@ -33,16 +35,46 @@ export default function Layout() {
         return () => {
             window.removeEventListener('resize', handleResize);
         };
-    }, []);
+	 }, []);
+	
+	const menu = useRef();
+	
+	const userProfile = [
+		{
+			template: function setProfile(){
+					
+				return (
+					<span className='list-group mt-3'  >
+						<p>{icon_username}</p>
+					</span>
+				);
+			}
+		},
+		{
+				separator: true
+			}
+	];
 
-    const start = <img alt='logo' src={SepioLogo} height='40' className='mr-2' />;
+    const start = <img alt='logo' style={{cursor:'pointer'}} src={SepioLogo} height='40' className='mr-2' />;
     const end = (
         <div className='flex align-items-center gap-2'>
-            <NavLink to='/' className='p-button p-component p-button-text' style={{ borderRadius: '10px', padding: '10px' }}>
+            <NavLink to='/' className='p-button p-component p-button-text'  style={{ borderRadius: '10px', padding: '10px', textDecoration:'none' }}>
                 <span className='pi pi-sign-out' style={{ marginRight: '5px' }} />
                 Logout
             </NavLink>
-            <Avatar icon='pi pi-user' size='large' shape='circle' />
+			 <Menu className="font-medium text-xl font-semibold text-center rounded-4 mt-2"  model={userProfile} popup ref={menu} id="popup_menu_left" closeOnEscape />
+			 <Button
+				 style={{width:'46px',height:'46px', borderRadius: '50%',  color: '#183462' }}
+				 icon="pi pi-user"
+				 rounded
+				 text
+				 severity="secondary"
+				 aria-label="User"
+				 className="mr-2"
+				 onClick={(event) => menu.current.toggle(event)}
+				 aria-controls="popup_menu"
+				 aria-haspopup
+			 />
         </div>
     );
 

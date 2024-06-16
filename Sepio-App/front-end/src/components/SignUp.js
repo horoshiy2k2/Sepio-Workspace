@@ -7,7 +7,7 @@ import Button from '@mui/joy/Button';
 import { useNavigate } from 'react-router-dom';
 import SepioLogo from './../image/Sepio_Logo.png';
 
-export default function InputSubscription() {
+export default function InputSubscription({setUsername}) {
   const navigate = useNavigate();
   const [data, setData] = React.useState({
     text: '',
@@ -27,7 +27,8 @@ export default function InputSubscription() {
       try {
         // Replace timeout with real backend operation
         setTimeout(() => {
-          setData({ text: '', status: 'sent' });
+			  setData({ text: '', status: 'sent' });
+			  setUsername(data.text);
           navigate('/querytool');
         }, 1500);
       } catch (error) {

@@ -144,6 +144,7 @@
 //new
 import React, { useState, useRef, useEffect } from 'react';
 import { Menubar } from 'primereact/menubar';
+import { Menu } from 'primereact/menu';
 import { Button } from 'primereact/button';
 import { useNavigate } from 'react-router-dom';
 import { InputText } from 'primereact/inputtext';
@@ -157,7 +158,7 @@ import axios from 'axios';
 import SepioLogo from './../image/Sepio_Logo.png';
 import { Toast } from 'primereact/toast';
 
-export default function Layout() {
+export default function Layout({icon_username}) {
     const navigate = useNavigate();
     const [searchQuery, setSearchQuery] = useState('');
     const [responseMessage, setResponseMessage] = useState('');
@@ -247,7 +248,26 @@ export default function Layout() {
         return () => {
             window.removeEventListener('resize', handleResize);
         };
-    }, []);
+	 }, []);
+	
+	
+		const menu = useRef();
+	
+	const userProfile = [
+		{
+			template: function setProfile(){
+					
+				return (
+					<span className='list-group mt-3'  >
+						<p>{icon_username}</p>
+					</span>
+				);
+			}
+		},
+		{
+				separator: true
+			}
+	];
 
     const start = (
         <>
@@ -257,14 +277,26 @@ export default function Layout() {
 
     const end = (
         <div className='flex align-items-center gap-2'>
-            <NavLink to='/' className='p-button p-component p-button-text' style={{ borderRadius: '10px', padding: '10px' }}>
+            <NavLink to='/' className='p-button p-component p-button-text text-decoration-none' style={{ borderRadius: '10px', padding: '10px' }}>
                 <span className='pi pi-sign-out' style={{ marginRight: '5px' }} />
                 Logout
             </NavLink>
-            <Avatar icon='pi pi-user' size='large' shape='circle' />
+ 			<Menu className="font-medium text-xl font-semibold text-center rounded-4 mt-2"  model={userProfile} popup ref={menu} id="popup_menu_left" closeOnEscape />
+			 <Button
+				 style={{width:'46px',height:'46px', borderRadius: '50%',  color: '#183462' }}
+				 icon="pi pi-user"
+				 rounded
+				 text
+				 severity="secondary"
+				 aria-label="User"
+				 className="mr-2"
+				 onClick={(event) => menu.current.toggle(event)}
+				 aria-controls="popup_menu"
+				 aria-haspopup
+			 />
         </div>
-    );
-
+	);
+	
     return (
         <div>
             <Toast ref={toast} />
@@ -285,7 +317,7 @@ export default function Layout() {
                 </CSidebarNav>
             </CSidebar>
 
-            <div style={{ display: 'flex', justifyContent: 'center', marginTop: '-600px', top: '4px', marginRight: '-150px' }}>
+            <div  style={{ display: 'flex', justifyContent: 'center', marginTop: '-600px', top: '4px', marginRight: '-150px' }}>
                 <InputText
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}

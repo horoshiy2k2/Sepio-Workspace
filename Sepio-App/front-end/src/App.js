@@ -1,4 +1,5 @@
 import React from 'react';
+import { useState } from 'react';
 import './App.css';
 import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 import SignUp from './components/SignUp';
@@ -14,17 +15,18 @@ import '@coreui/coreui/dist/css/coreui.min.css'; // Import CoreUI CSS
 
 
 function App() {
+	const [icon_username, setUsername] = useState('');
   return (
     <Router>
       <section className = 'sepio'>
     <div className="App">
       <Routes>
-        <Route path = '/' element = {<SignUp/>}/>
-        <Route path = '/querytool' element = {<RootView/>}/>   
+			<Route path='/' element={<SignUp setUsername={setUsername} />}/>
+					  <Route path='/querytool' element={<RootView icon_username={icon_username} />}/>   
         {/* <Route path = '/querytool/logs' element = {<LogsPage/>}/>   */}
-        <Route path = '/querytool/mac' element = {<MAC/>}/> 
+        <Route path = '/querytool/mac' element = {<MAC icon_username={icon_username}/>}/> 
         {/* <Route path = '/querytool/searchhistory' element = {<SearchHistory/>}/>   */}
-        <Route path = '/querytool/settings' element = {<Settings/>}/>
+        <Route path = '/querytool/settings' element = {<Settings icon_username={icon_username}/>}/>
       </Routes>
 
     </div>
