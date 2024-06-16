@@ -248,12 +248,11 @@ export default function Layout({icon_username}) {
         return () => {
             window.removeEventListener('resize', handleResize);
         };
-	 }, []);
-	
-	
-		const menu = useRef();
-	
-	const userProfile = [
+    }, []);
+
+    const menu = useRef();
+
+    const userProfile = [
 		{
 			template: function setProfile(){
 					
@@ -277,11 +276,11 @@ export default function Layout({icon_username}) {
 
     const end = (
         <div className='flex align-items-center gap-2'>
-            <NavLink to='/' className='p-button p-component p-button-text text-decoration-none' style={{ borderRadius: '10px', padding: '10px' }}>
+            <NavLink to='/' className='p-button p-component p-button-text' style={{ borderRadius: '10px', padding: '10px' }}>
                 <span className='pi pi-sign-out' style={{ marginRight: '5px' }} />
                 Logout
             </NavLink>
- 			<Menu className="font-medium text-xl font-semibold text-center rounded-4 mt-2"  model={userProfile} popup ref={menu} id="popup_menu_left" closeOnEscape />
+            <Menu className="font-medium text-xl font-semibold text-center rounded-4 mt-2"  model={userProfile} popup ref={menu} id="popup_menu_left" closeOnEscape />
 			 <Button
 				 style={{width:'46px',height:'46px', borderRadius: '50%',  color: '#183462' }}
 				 icon="pi pi-user"
@@ -294,9 +293,10 @@ export default function Layout({icon_username}) {
 				 aria-controls="popup_menu"
 				 aria-haspopup
 			 />
-        </div>
-	);
-	
+    </div>
+  );
+ 
+
     return (
         <div>
             <Toast ref={toast} />
@@ -317,7 +317,7 @@ export default function Layout({icon_username}) {
                 </CSidebarNav>
             </CSidebar>
 
-            <div  style={{ display: 'flex', justifyContent: 'center', marginTop: '-600px', top: '4px', marginRight: '-150px' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', marginTop: '-600px', top: '4px', marginRight: '-150px' }}>
                 <InputText
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
@@ -333,7 +333,7 @@ export default function Layout({icon_username}) {
                     label='Search'
                     icon='pi pi-search'
                     onClick={handlePostMac}
-                    style={{ backgroundColor: '#183462', borderColor: '183462', marginLeft: '10px' }}
+                    style={{ backgroundColor: '#183462', borderColor: '183462', marginLeft: '0px', borderRadius: '5px'}}
                 />
             </div>
 
@@ -344,9 +344,18 @@ export default function Layout({icon_username}) {
             )}
 
             {foundMacAddresses.length > 0 && (
-                <div style={{  marginLeft: marginLeft, display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '20px', width: '100%',  marginLeft: '70px' }}>
+                <div style={{  marginLeft: marginLeft, display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '20px', width: '100%', marginLeft: '100px' }}>
+                    <div style = {{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        height: '400px',
+                        overflowY: 'auto',
+                        width: '600px',
+                        paddingRight: '10px',
+                    }}>
                     {foundMacAddresses.map((item, index) => (
-                        <div key={index} style={{ marginBottom: '20px', width: '90%', maxWidth: '600px' }}>
+                        <div key={index} style={{marginBottom: '20px', width: '90%', maxWidth: '600px' }}>
                             <h4 style={{ textAlign: 'center' }}>{item.macAddress}</h4>
                             <DataTable value={[item]} responsiveLayout="scroll" style={{ marginLeft: marginLeft, width: '100%', minWidth: '400px'}}>
                                 <Column field="macAddressStatus" header="MAC Address Status" style={{ minWidth: '300px', width: '60%' }} />
@@ -354,12 +363,12 @@ export default function Layout({icon_username}) {
                             </DataTable>
                         </div>
                     ))}
+                    </div>
                 </div>
             )}
         </div>
     );
 }
-
 
 
 
