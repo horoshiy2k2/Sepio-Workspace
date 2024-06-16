@@ -1,0 +1,46 @@
+25.04.24: create code for automaticly show the message below "calculete labels" when labels execute show message that ("labels is processing")
+25.04.24: auto population configuration whith data which people are choice (dependency from modes)
+25.04.24: controler for list in service now use the config and 2 logic script include and Ui script
+25.04.24: test with scheduler start and manualy
+25.04.24: call here .GuardicoreUtils() calculate script include
+
+26.04.24:  testing application calculate on 20 config
+26.04.24: ceate documentation about for manual testing
+
+
+26.04.24 on submit whenn populet child config;
+26.04.24 create bussnes ruler for insert the child record 
+
+29.04.24 send Data in app sepia create body
+29.04.24 modify CSS 
+29.04.24 create dravio project
+
+31.05.24 create e-deshbord
+
+01.05.24 Add 3 roles on UI if knelt have root role he can see more
+01.05.24 create functionality with Mac address search
+01.05.24 Name Query tool?
+01.05.24 add left deshbod
+
+05.06.24 handler on empty MAC
+05.06.24 add logs view / 20 logs on one page
+05.06.24 and implement search history view 
+25.04.24: create code for automaticly show the message below "calculete labels" when labels execute show message that ("labels is processing")
+25.04.24: auto population configuration whith data which people are choice (dependency from modes)
+25.04.24: controler for list in service now use the config and 2 logic script include and Ui script
+25.04.24: test with scheduler start and manualy
+25.04.24: call here .GuardicoreUtils() calculate script include
+
+26.04.24:  testing application calculate on 20 config
+26.04.24: ceate documentation about for manual testing
+
+
+26.04.24 on submit whenn populet child config;
+26.04.24 create bussnes ruler for insert the child record 
+
+26.05.24 Need thing for implementation my functionnaluti in the script
+26.05.24 Create repositiry for project
+28.05.24 Configure view for new application
+28.05.24 Data request on server side from UI
+28.05.24 Develop documentation for UI type
+28.05.24 repid and learning new thing about Cyber Security 
