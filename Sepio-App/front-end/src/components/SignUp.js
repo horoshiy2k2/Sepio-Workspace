@@ -13,7 +13,7 @@ export default function InputSubscription({setUsername}) {
     text: '',
     status: 'initial',
   });
-
+//
   const [password, setPassword] = React.useState('');
 
   const inputData = () => {
