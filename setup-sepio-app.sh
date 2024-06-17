@@ -76,11 +76,6 @@ show_header() {
 
 # Main script execution starts here
 
-if [ "$(id -u)" != "0" ]; then
-    log "Error: This script must be run as root."
-    exit 1
-fi
-
 show_header
 
 log "Starting setup script..."
