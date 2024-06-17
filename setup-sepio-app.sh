@@ -165,6 +165,7 @@ sudo systemctl start redis-server
 log "Enabling Redis service to start on boot..."
 sudo systemctl enable redis-server
 
+clear
 log "Checking Redis status... Please press Ctrl + C!"
 sudo systemctl status redis-server
 
