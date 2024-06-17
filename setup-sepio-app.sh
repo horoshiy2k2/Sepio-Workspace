@@ -196,6 +196,10 @@ WorkingDirectory=$SEPIO_APP_DIR/front-end
 [Install]
 WantedBy=multi-user.target
 EOL"
+if [ $? -ne 0 ]; then
+    log "Error: Failed to create react-build.service."
+    exit 1
+fi
 
 log "Creating systemd service for server.js..."
 sudo bash -c "cat <<EOL > /etc/systemd/system/node-server.service
@@ -214,21 +218,47 @@ WorkingDirectory=$SEPIO_APP_DIR/backend
 [Install]
 WantedBy=multi-user.target
 EOL"
+if [ $? -ne 0 ]; then
+    log "Error: Failed to create node-server.service."
+    exit 1
+fi
 
 log "Reloading systemd daemon to pick up the new service files..."
 sudo systemctl daemon-reload
+if [ $? -ne 0 ]; then
+    log "Error: Failed to reload systemd daemon."
+    exit 1
+fi
 
 log "Enabling react-build.service to start on boot..."
 sudo systemctl enable react-build.service
+if [ $? -ne 0 ]; then
+    log "Error: Failed to enable react-build.service."
+    exit 1
+fi
 
 log "Starting react-build.service... Please be patient, don't break up the process..."
 sudo systemctl start react-build.service
+if [ $? -ne 0 ]; then
+    log "Error: Failed to start react-build.service."
+    exit 1
+fi
 
 log "Enabling node-server.service to start on boot..."
 sudo systemctl enable node-server.service
+if [ $? -ne 0 ]; then
+    log "Error: Failed to enable node-server.service."
+    exit 1
+fi
 
 log "Starting node-server.service..."
 sudo systemctl start node-server.service
+if [ $? -ne 0 ]; then
+    log "Error: Failed to start node-server.service."
+    exit 1
+fi
+
+log "Systemd services setup completed successfully."
 
 log "Setup script executed successfully."
 
