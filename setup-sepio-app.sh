@@ -109,14 +109,17 @@ npm install eslint-webpack-plugin@latest --save-dev
 
 log "Granting privilages for Updater and scheduling autoupdates..."
 schedule_updater
-cd $SCRIPT_DIR
+cd "$SCRIPT_DIR" || { log "Error: Directory $SCRIPT_DIR not found."; exit 1; }
 chmod +x Sepio_Updater.sh
 sudo touch /var/log/sepio_updater.log
-sudo chown $USER:$USER /var/log/sepio_updater.log
+sudo chown "$USER:$USER" /var/log/sepio_updater.log
 
 log "Installing MySQL server..."
-sudo apt-get update
-sudo apt-get install -y mysql-server
+sudo apt-get update && sudo apt-get install -y mysql-server
+if [ $? -ne 0 ]; then
+    log "Error: Failed to install MySQL server."
+    exit 1
+fi
 
 log "Securing MySQL installation..."
 sudo expect -c "
@@ -156,8 +159,11 @@ else
 fi
 
 log "Installing Redis server..."
-sudo apt-get update
-sudo apt-get install -y redis-server
+sudo apt-get update && sudo apt-get install -y redis-server
+if [ $? -ne 0 ]; then
+    log "Error: Failed to install Redis server."
+    exit 1
+fi
 
 log "Starting Redis service..."
 sudo systemctl start redis-server
@@ -214,8 +220,6 @@ User=$USER
 Environment=PATH=$PATH:/usr/local/bin
 Environment=NODE_ENV=production
 WorkingDirectory=$SEPIO_APP_DIR/backend
-
-[Install]
 WantedBy=multi-user.target
 EOL"
 if [ $? -ne 0 ]; then
