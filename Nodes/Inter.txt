@@ -1,0 +1,97 @@
+Денисе, вітаю!
+Про формат роботи та задачі:
+Перше і головне - це моніторинг спрацювань, першочерговий збір статистики та інших деталей відносно певного задокументованого алгоритму реагування - Tier 1. Також це робота з Threat Intelligence, кореляційними правилами. За достатньої кваліфікації можливий допуск до розробки автоматизованих сценаріїв реагування. 
+Нижче наші вимоги до базових знань. Вони не є всі еталонними та обов'язковими.
+
+1.1  Basic knowledge of security systems – розуміння основних принципів побудови та використання систем інформаційної безпеки. Наприклад: SIEM, SOAR, Vulnerability Scanner, NGFW, Endpoint Security та інше.
+
+
+
+1.2  Knowledge of main aspects of event logging process:
+
+·       Що таке подія? Навіщо воно потрібна реєстрація подій? Як працювати з подіями? Методи та протоколи передачі подій з систем?/////////////
+
+·       Базові знання принципів реєстрації подій в операційних систем Windows та Linux based.////////////////
+
+·       Протоколи аутентифікації./////////////////
+
+1.3 Basic knowledge of Network functionality:
+
+·       Модель OSI. Рівні та їх призначення.
+
+·       Мережеві протоколи. Типові комбінації порт-протокол-сервіс.///////////////////
+
+·       Поняття: Trunk, SPAN, Promiscuous mode, Flow формати, TCP сесія.////////////////////////
+
+·       Мережеве обладнання – яке навіщо, на яких рівнях працює (wired/wireless, access, aggregation, core, WAN etc).//////////
+<wirreless almost use radio signal for connect network divesices /  wired network uses coper cobel for network connection: https://www.bbc.co.uk/bitesize/guides/zj88jty/revision/3
+
+<access: its the access to my network and i need controle for exemple in company have accout and from this acount you can get access into networ but is not i cent get access to the network (Access controle)
+
+
+<aggregation: is using for combining multiple element in to single.
+exemple: 
+its using for data anylyth data is groping data base on some criterias which was add into SIEM filter by ip : https://www.lenovo.com/in/en/glossary/what-is-aggregate/#:~:text=In%20communication%20networks%2C%20aggregating%20data,usage%20and%20reducing%20network%20overhead.
+
+<core is a biggest network infrastructure which contains inside 3 layer {Access layer, aggregation, core} the core layer was transferred data befor all layer give access: https://www.youtube.com/watch?v=CsYN4eryc-Y
+
+
+·       Firewall, IPS|IDS – призначення, принципи роботи. VPN та його типи.    IPS\IDS monitoring network on malictios activity and if this activity was find this service are report in SIEM system about thread:https://en.wikipedia.org/wiki/Intrusion_detection_system.
+
+Firewall in dirence IPS|IDS can react on thread automaticaly and of coures Firewal minitiring incoming and outcoming trafic: https://www.cisco.com/c/en/us/products/security/firewalls/what-is-a-firewall.html#:~:text=A%20firewall%20is%20a%20network,defined%20set%20of%20security%20rules.
+
+1.4 Basic knowledge of different operating systems and databases:
+
+·       Linux based – розгортання та базові навички адміністрування популярних дистрибутивів.
+
+·       Windows – розгортання, сервіси та базові навички адміністрування.
+
+Основні (популярні) СУБД та сфери застосування. Знання SQL буде додатковим плюсом.
+
+1.5 Basic knowledge of different IT services:
+
+·       LDAP - Призначення. Аутентифікація. Авторизація. Microsoft Active Directory - Поняття «служба каталогів». Структура. Ієрархія та об'єкти. GPO.////////////////////
+
+·       DNS - Основні задачі та принцип роботи. Типи записів (MX,NS,A,CNAME,PTR,SRV,SPF).    When i search some page in the intertnet i write domen, but when this domen are saved they saved in DNS its a big lidrari domene in DNS damains as IP.
+
+·       SMTP.//////////////////////
+
+·       NAT та PAT.//////////////////
+
+·       PKI.
+
+1.6 Key knowledge of MITRE ATT&CK framework (Enterprise).//its librari with dirent methods atack and solution event which reakt on this thread
+
+1.7 Additional Topics:
+
+·       Робота з діагностичними засобами – nslookup, route, ipconfig, netstat, tracert, nbstat, sc, nmap, arp.
+
+·       Kerberos.///////////////////
+
+·       SSL;//This protocol use in https for secure request data in the network the SSL encript data and encript use 2 keys (encript, decript)
+
+·       TLS;Its autorithation protocol, which check your sertificat in moment when you satrt  comunicate
+
+·       Принципи резервного копіювання та відновлення.
+
+1.8 Інструментарій документування:
+
+·       Microsoft Word; Microsoft Excel.
+
+
+
+
+
+
+LDAP: is using for the find the someone in network using the thing which you know like (type of some email address) you can analuthe this using the LDAP and find awiting resoult 
+
+1.7 Additional Topics:
+ARP: address resolution protocal: is using for get the ip address in particalar divese in your local area or in the different using the brout cast for rout and router identifai divice by ip and this device request MAC
+
+TLS is using for identefe user in the systm checkthe sertisicat that server can trust this particular user and after give the assecc
+SSL: is 2 different methad ecription and decription information (Asymmetric and Semetric)
+Asymmetric: they have 2 key (publick and privet) is the publick key use kliend and server for encript the information which they exchenge but decript message you can using the (privet key) 
+
+Semetric: thay have only one key for encript and decript messade ita not bespractise becos if ypu wont to reques message to other user they cant decript message becose they dont have the key and solution for this is request the your key to person wich you request the key its bet scenario bocos if reques this key can get the (hacker) and get the sensetive data
+
+

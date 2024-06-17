@@ -1,0 +1,27 @@
+Documentation:
+
+
+Introdaction
+1.Technology Stack: which i use in the project
+
+2.How to set Up instruction
+
+
+Front-end
+1. core-dependency and libraris
+2. Components hierarchy
+3. All show on the exemple
+4. components lifecicle and their porposes
+
+Axios:
+1. Explenation the axios request and how it interap with backend type
+2. API endpoint explenetation
+
+Cliend-side logic
+1. explene the riuting
+2. Styling on the exemple
+3 different ection onClick
+4 explene the React hook
+
+Conclution
+conclution all thisns above  
