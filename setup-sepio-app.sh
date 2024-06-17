@@ -37,11 +37,7 @@ install_packages lolcat
 install_packages git
 install_packages jq
 
-log "Granting privilages for Updater and scheduling autoupdates..."
-schedule_updater
-chmod +x Sepio_Updater.sh
-sudo touch /var/log/sepio_updater.log
-sudo chown $USER:$USER /var/log/sepio_updater.log
+
 
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
 SEPIO_APP_DIR="$SCRIPT_DIR/Sepio-App"
@@ -282,6 +278,11 @@ sudo systemctl enable node-server.service
 log "Starting node-server.service..."
 sudo systemctl start node-server.service
 
+log "Granting privilages for Updater and scheduling autoupdates..."
+schedule_updater
+chmod +x Sepio_Updater.sh
+sudo touch /var/log/sepio_updater.log
+sudo chown $USER:$USER /var/log/sepio_updater.log
 
 log "Setup script executed successfully."
 
