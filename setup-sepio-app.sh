@@ -294,3 +294,4 @@ check_port_availability 3000
 
 log "Setup script executed successfully."
 
+log "I am updated!!!"
