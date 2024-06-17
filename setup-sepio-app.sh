@@ -68,6 +68,25 @@ install_backend_dependencies() {
         exit 1
     fi
 }
+check_port_availability() {
+    local port=$1
+    local retries=10
+    local wait=3
+
+    log "Checking if the application is available on port $port..."
+
+    for ((i=1; i<=retries; i++)); do
+        if sudo ss -tln | grep ":$port" > /dev/null; then
+            log "Application is available on port $port."
+            return 0
+        fi
+        log "Port $port is not available yet. Waiting for $wait seconds... (Attempt $i/$retries)"
+        sleep $wait
+    done
+
+    log "Error: Application is not available on port $port after $((retries * wait)) seconds."
+    exit 1
+}
 
 show_header() {
     echo "====================================" | lolcat
@@ -270,6 +289,8 @@ if [ $? -ne 0 ]; then
 fi
 
 log "Systemd services setup completed successfully."
+
+check_port_availability 3000
 
 log "Setup script executed successfully."
 
