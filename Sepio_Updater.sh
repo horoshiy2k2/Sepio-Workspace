@@ -66,6 +66,9 @@ restart_frontend() {
 }
 
 
+
+show_header
+
 log "Starting application update process..."
 
 update_backend
