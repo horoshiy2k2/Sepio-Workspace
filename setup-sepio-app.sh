@@ -70,12 +70,6 @@ get_required_node_version() {
     echo $required_node_version
 }
 
-if ! command -v jq &> /dev/null; then
-    log "jq is not installed. Installing jq..."
-    sudo apt-get update
-    sudo apt-get install -y jq
-fi
-
 backend_node_version=$(get_required_node_version "$SEPIO_APP_DIR/backend/package.json")
 
 if [ "$backend_node_version" = "null" ]; then
