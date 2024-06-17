@@ -23,20 +23,22 @@ update_backend() {
     REMOTE=$(git rev-parse origin/main)
 
     if [ "$LOCAL" == "$REMOTE" ]; then
-        log "Backend is already up to date."
+        log "Backend is already up to date. Pulling anyway..."
     else
-        git pull origin main
-        if [ $? -ne 0 ]; then
-            log "Error: Failed to pull updates from Git repository."
-            exit 1
-        fi
+        log "New updates found for backend. Pulling updates..."
+    fi
 
-        log "Installing backend dependencies..."
-        npm install
-        if [ $? -ne 0 ]; then
-            log "Error: Failed to install backend dependencies."
-            exit 1
-        fi
+    git pull origin main
+    if [ $? -ne 0 ]; then
+        log "Error: Failed to pull updates from Git repository."
+        exit 1
+    fi
+
+    log "Installing backend dependencies..."
+    npm install
+    if [ $? -ne 0 ]; then
+        log "Error: Failed to install backend dependencies."
+        exit 1
     fi
 }
 
@@ -48,20 +50,22 @@ update_frontend() {
     REMOTE=$(git rev-parse origin/main)
 
     if [ "$LOCAL" == "$REMOTE" ]; then
-        log "Frontend is already up to date."
+        log "Frontend is already up to date. Pulling anyway..."
     else
-        git pull origin main
-        if [ $? -ne 0 ]; then
-            log "Error: Failed to pull updates from Git repository."
-            exit 1
-        fi
+        log "New updates found for frontend. Pulling updates..."
+    fi
 
-        log "Installing frontend dependencies..."
-        npm install
-        if [ $? -ne 0 ]; then
-            log "Error: Failed to install frontend dependencies."
-            exit 1
-        fi
+    git pull origin main
+    if [ $? -ne 0 ]; then
+        log "Error: Failed to pull updates from Git repository."
+        exit 1
+    fi
+
+    log "Installing frontend dependencies..."
+    npm install
+    if [ $? -ne 0 ]; then
+        log "Error: Failed to install frontend dependencies."
+        exit 1
     fi
 }
 
@@ -94,5 +98,6 @@ restart_backend
 restart_frontend
 
 log "Application update and service restart completed successfully."
+
 
 
