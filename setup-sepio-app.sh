@@ -225,6 +225,8 @@ User=$USER
 Environment=PATH=$PATH:/usr/local/bin
 Environment=NODE_ENV=production
 WorkingDirectory=$SEPIO_APP_DIR/backend
+
+[Install]
 WantedBy=multi-user.target
 EOL"
 if [ $? -ne 0 ]; then
