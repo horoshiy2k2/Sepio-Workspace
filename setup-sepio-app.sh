@@ -1,11 +1,17 @@
 #!/bin/bash
+log() {
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" | lolcat
+}
 
 install_packages() {
     local package=$1
-    if ! command -v $package &> /dev/null; then
+    if ! command -v "$package" &> /dev/null; then
         log "$package is not installed. Installing $package..."
-        sudo apt-get update
-        sudo apt-get install -y $package
+        sudo apt-get update && sudo apt-get install -y "$package"
+        if [ $? -ne 0 ]; then
+            log "Error: Failed to install $package."
+            exit 1
+        fi
     else
         log "$package is already installed."
     fi
@@ -14,8 +20,52 @@ install_packages() {
 schedule_updater() {
     local script_path=$(realpath "$SCRIPT_DIR/Sepio_Updater.sh")
     local cron_job="0 3 * * * $script_path >> /var/log/sepio_updater.log 2>&1"
-    (crontab -l ; echo "$cron_job") | crontab -
+    (crontab -l 2>/dev/null; echo "$cron_job") | crontab -
     log "Scheduled Sepio_Updater.sh to run daily at 3:00 AM."
+}
+
+get_required_node_version() {
+    local package_json_path=$1
+    local required_node_version=$(jq -r '.engines.node' "$package_json_path")
+    echo "${required_node_version:-16}"  # Default to Node.js version 16 if not specified
+}
+
+install_node_version() {
+    local node_version=$1
+    if ! command -v nvm &> /dev/null; then
+        log "nvm (Node Version Manager) is not installed. Installing nvm..."
+        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+        export NVM_DIR="$HOME/.nvm"
+        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    fi
+    nvm install "$node_version"
+    if [ $? -ne 0 ]; then
+        log "Error: Failed to install Node.js version $node_version using nvm."
+        exit 1
+    fi
+    nvm use "$node_version"
+    log "Using Node.js version $node_version."
+}
+
+clone_or_update_repository() {
+    local repository_url=$1
+    local target_directory=$2
+    if [ ! -d "$target_directory" ]; then
+        log "Cloning $repository_url to $target_directory..."
+        git clone "$repository_url" "$target_directory"
+        if [ $? -ne 0 ]; then
+            log "Error: Failed to clone the repository."
+            exit 1
+        fi
+    else
+        log "Directory $target_directory already exists. Updating repository..."
+        cd "$target_directory" || { log "Error: Directory $target_directory not found."; exit 1; }
+        git pull origin main
+        if [ $? -ne 0 ]; then
+            log "Error: Failed to update the repository."
+            exit 1
+        fi
+    fi
 }
 
 show_header() {
@@ -24,11 +74,14 @@ show_header() {
     echo "====================================" | lolcat
 }
 
-show_header
+# Main script execution starts here
 
-log() {
-    echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" | lolcat
-}
+if [ "$(id -u)" != "0" ]; then
+    log "Error: This script must be run as root."
+    exit 1
+fi
+
+show_header
 
 log "Starting setup script..."
 
@@ -37,125 +90,29 @@ install_packages lolcat
 install_packages git
 install_packages jq
 
-
-
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
 SEPIO_APP_DIR="$SCRIPT_DIR/Sepio-App"
 
-if ! command -v git &> /dev/null; then
-    log "Git is not installed. Installing Git..."
-    sudo apt-get update
-    sudo apt-get install -y git
-else
-    git_version=$(git --version)
-    log "Git is already installed. Version: $git_version"
-fi
-
-if [ ! -d "$SEPIO_APP_DIR" ]; then
-    log "Cloning the Sepio-App repository..."
-    git clone https://github.com/Floreno12/Sepio-Workspace "$SEPIO_APP_DIR"
-    if [ $? -ne 0 ]; then
-        log "Error: Failed to clone the repository."
-        exit 1
-    fi
-else
-    log "Directory Sepio-App already exists. Skipping clone step."
-fi
-
 log "Checking for required Node.js versions from package.json files..."
-
-get_required_node_version() {
-    local package_json_path=$1
-    required_node_version=$(jq -r '.engines.node' "$package_json_path")
-    echo $required_node_version
-}
-
 backend_node_version=$(get_required_node_version "$SEPIO_APP_DIR/backend/package.json")
-
-if [ "$backend_node_version" = "null" ]; then
-    log "No specific Node.js version specified in $SEPIO_APP_DIR/backend/package.json. Using default version."
-    backend_node_version="16"
-else
-    log "Required Node.js version for backend: $backend_node_version"
-fi
+log "Required Node.js version for backend: $backend_node_version"
+install_node_version "$backend_node_version"
 
 frontend_node_version=$(get_required_node_version "$SEPIO_APP_DIR/front-end/package.json")
+log "Required Node.js version for frontend: $frontend_node_version"
+install_node_version "$frontend_node_version"
 
-if [ "$frontend_node_version" = "null" ]; then
-    log "No specific Node.js version specified in $SEPIO_APP_DIR/front-end/package.json. Using default version."
-    frontend_node_version="16"
-else
-    log "Required Node.js version for frontend: $frontend_node_version"
-fi
-
-if ! command -v nvm &> /dev/null; then
-    log "nvm (Node Version Manager) is not installed. Installing nvm..."
-    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
-    export NVM_DIR="$HOME/.nvm"
-    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-fi
-
-nvm install $backend_node_version
-if [ $? -ne 0 ]; then
-    log "Error: Failed to install Node.js version $backend_node_version using nvm."
-    exit 1
-fi
-
-nvm use $backend_node_version
-
-log "Using Node.js version $backend_node_version for backend"
-node_version=$(node -v)
-log "Node.js version in use for backend: $node_version"
-
-log "Node.js and npm installation for backend completed successfully."
-
-cd "$SEPIO_APP_DIR/backend" || { log "Error: Directory $SEPIO_APP_DIR/backend does not exist."; exit 1; }
-log "Installing backend dependencies..."
-npm install
-if [ $? -ne 0 ]; then
-    log "Error: Failed to install backend dependencies."
-    exit 1
-fi
-
-log "Backend dependencies installed successfully."
-
-cd "$SEPIO_APP_DIR/front-end" || { log "Error: Directory $SEPIO_APP_DIR/front-end does not exist."; exit 1; }
-
-nvm install $frontend_node_version
-if [ $? -ne 0 ]; then
-    log "Error: Failed to install Node.js version $frontend_node_version using nvm."
-    exit 1
-fi
-
-nvm use $frontend_node_version
-
-log "Using Node.js version $frontend_node_version for frontend"
-node_version=$(node -v)
-log "Node.js version in use for frontend: $node_version"
-
-log "Node.js and npm installation for frontend completed successfully."
-
-log "Installing frontend dependencies..."
-npm install
-if [ $? -ne 0 ]; then
-    log "Error: Failed to install frontend dependencies."
-    exit 1
-fi
-
-log "Clearing npm cache..."
-npm cache clean --force
-
-log "Removing node_modules and package-lock.json..."
-rm -rf node_modules package-lock.json
-
-log "Reinstalling dependencies..."
-npm install
-
-log "Updating dependencies..."
-npm update
+clone_or_update_repository "https://github.com/Floreno12/Sepio-Workspace" "$SEPIO_APP_DIR"
 
 log "Installing latest eslint-webpack-plugin..."
 npm install eslint-webpack-plugin@latest --save-dev
+
+log "Granting privilages for Updater and scheduling autoupdates..."
+schedule_updater
+cd $SCRIPT_DIR
+chmod +x Sepio_Updater.sh
+sudo touch /var/log/sepio_updater.log
+sudo chown $USER:$USER /var/log/sepio_updater.log
 
 log "Installing MySQL server..."
 sudo apt-get update
@@ -271,12 +228,6 @@ sudo systemctl enable node-server.service
 
 log "Starting node-server.service..."
 sudo systemctl start node-server.service
-
-log "Granting privilages for Updater and scheduling autoupdates..."
-schedule_updater
-chmod +x Sepio_Updater.sh
-sudo touch /var/log/sepio_updater.log
-sudo chown $USER:$USER /var/log/sepio_updater.log
 
 log "Setup script executed successfully."
 
