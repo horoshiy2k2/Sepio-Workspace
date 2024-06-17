@@ -70,7 +70,7 @@ install_backend_dependencies() {
 }
 check_port_availability() {
     local port=$1
-    local retries=10
+    local retries=30
     local wait=3
 
     log "Checking if the application is available on port $port..."

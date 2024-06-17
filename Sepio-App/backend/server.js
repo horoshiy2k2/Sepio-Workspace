@@ -6,12 +6,12 @@ const { Sequelize } = require('sequelize');
 const cors = require('cors');
 
 //Auth deps 
-require('dotenv').config();
-const authRoutes = require('./routes/authRoutes');
+//require('dotenv').config();
+//const authRoutes = require('./routes/authRoutes');
 
 const app = express();
-app.use(express.json());
-app.use('/auth', authRoutes);
+//app.use(express.json());
+//app.use('/auth', authRoutes);
 
 const PORT = process.env.PORT || 3000;
 
