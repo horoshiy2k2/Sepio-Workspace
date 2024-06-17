@@ -1,16 +1,22 @@
 #!/bin/bash
 
-if ! command -v figlet &> /dev/null; then
-    echo "figlet is not installed. Installing figlet..."
-    sudo apt-get update
-    sudo apt-get install -y figlet
-fi
+install_packages() {
+    local package=$1
+    if ! command -v $package &> /dev/null; then
+        log "$package is not installed. Installing $package..."
+        sudo apt-get update
+        sudo apt-get install -y $package
+    else
+        log "$package is already installed."
+    fi
+}
 
-if ! command &> /dev/null lolcat; then
-    echo "lolcat is not installed. Installing lolcat..."
-    sudo apt-get update
-    sudo apt-get install -y lolcat
-fi
+schedule_updater() {
+    local script_path=$(realpath "$SCRIPT_DIR/Sepio_Updater.sh")
+    local cron_job="0 3 * * * $script_path >> /var/log/sepio_updater.log 2>&1"
+    (crontab -l ; echo "$cron_job") | crontab -
+    log "Scheduled Sepio_Updater.sh to run daily at 3:00 AM."
+}
 
 show_header() {
     echo "====================================" | lolcat
@@ -26,6 +32,17 @@ log() {
 
 log "Starting setup script..."
 
+install_packages figlet
+install_packages lolcat
+install_packages git
+install_packages jq
+
+log "Granting privilages for Updater and scheduling autoupdates..."
+schedule_updater
+chmod +x Sepio_Updater.sh
+sudo touch /var/log/sepio_updater.log
+sudo chown $USER:$USER /var/log/sepio_updater.log
+
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
 SEPIO_APP_DIR="$SCRIPT_DIR/Sepio-App"
 
@@ -40,7 +57,7 @@ fi
 
 if [ ! -d "$SEPIO_APP_DIR" ]; then
     log "Cloning the Sepio-App repository..."
-    git clone https://github.com/Floreno12/Sepio-Application.git "$SEPIO_APP_DIR"
+    git clone https://github.com/Floreno12/Sepio-Workspace "$SEPIO_APP_DIR"
     if [ $? -ne 0 ]; then
         log "Error: Failed to clone the repository."
         exit 1
@@ -149,6 +166,70 @@ npm update
 
 log "Installing latest eslint-webpack-plugin..."
 npm install eslint-webpack-plugin@latest --save-dev
+
+log "Installing MySQL server..."
+sudo apt-get update
+sudo apt-get install -y mysql-server
+
+log "Securing MySQL installation..."
+sudo expect -c "
+spawn mysql_secure_installation
+expect \"Enter current password for root (enter for none):\"
+send \"\r\"
+expect \"Set root password?\"
+send \"n\r\"
+expect \"Remove anonymous users?\"
+send \"y\r\"
+expect \"Disallow root login remotely?\"
+send \"y\r\"
+expect \"Remove test database and access to it?\"
+send \"y\r\"
+expect \"Reload privilege tables now?\"
+send \"y\r\"
+expect eof
+"
+
+log "Starting MySQL service..."
+sudo systemctl start mysql
+
+log "Enabling MySQL service to start on boot..."
+sudo systemctl enable --now mysql
+
+log "Checking MySQL status..."
+sudo systemctl status --quiet mysql
+
+log "Checking MySQL port configuration..."
+mysql_port=$(sudo ss -tln | grep ':3306 ')
+if [ -n "$mysql_port" ]; then
+    log "MySQL is running on port 3306."
+    log "MySQL installation and setup completed."
+else
+    log "Error: MySQL is not running on port 3306."
+    exit 1
+fi
+
+log "Installing Redis server..."
+sudo apt-get update
+sudo apt-get install -y redis-server
+
+log "Starting Redis service..."
+sudo systemctl start redis-server
+
+log "Enabling Redis service to start on boot..."
+sudo systemctl enable redis-server
+
+log "Checking Redis status... Please press Ctrl + C!"
+sudo systemctl status redis-server
+
+log "Checking Redis port configuration..."
+redis_port=$(sudo ss -tln | grep ':6379 ')
+if [ -n "$redis_port" ]; then
+    log "Redis is running on port 6379."
+    log "Redis installation and setup completed."
+else
+    log "Error: Redis is not running on port 6379."
+    exit 1
+fi
 
 log "Creating systemd service for React build..."
 sudo bash -c "cat <<EOL > /etc/systemd/system/react-build.service

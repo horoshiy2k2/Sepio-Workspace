@@ -5,8 +5,17 @@ const path = require('path');
 const { Sequelize } = require('sequelize');
 const cors = require('cors');
 
+//Auth deps 
+require('dotenv').config();
+const authRoutes = require('./routes/authRoutes');
+
 const app = express();
+app.use(express.json());
+app.use('/auth', authRoutes);
+
 const PORT = process.env.PORT || 3000;
+
+
 
 // Middleware
 app.use(bodyParser.json());
