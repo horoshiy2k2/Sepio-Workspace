@@ -26,8 +26,8 @@ schedule_updater() {
 
 get_required_node_version() {
     local package_json_path=$1
-    local required_node_version=$(jq -r '.engines.node' "$package_json_path")
-    echo "${required_node_version:-16}"  # Default to Node.js version 16 if not specified
+    local required_node_version=$(jq -r '.engines.node // "16"' "$package_json_path")
+    echo "$required_node_version"
 }
 
 install_node_version() {
@@ -45,27 +45,6 @@ install_node_version() {
     fi
     nvm use "$node_version"
     log "Using Node.js version $node_version."
-}
-
-clone_or_update_repository() {
-    local repository_url=$1
-    local target_directory=$2
-    if [ ! -d "$target_directory" ]; then
-        log "Cloning $repository_url to $target_directory..."
-        git clone "$repository_url" "$target_directory"
-        if [ $? -ne 0 ]; then
-            log "Error: Failed to clone the repository."
-            exit 1
-        fi
-    else
-        log "Directory $target_directory already exists. Updating repository..."
-        cd "$target_directory" || { log "Error: Directory $target_directory not found."; exit 1; }
-        git pull origin main
-        if [ $? -ne 0 ]; then
-            log "Error: Failed to update the repository."
-            exit 1
-        fi
-    fi
 }
 
 install_frontend_dependencies() {
@@ -116,13 +95,19 @@ install_backend_dependencies "$SEPIO_APP_DIR/backend"
 log "Checking for required Node.js versions from package.json files..."
 backend_node_version=$(get_required_node_version "$SEPIO_APP_DIR/backend/package.json")
 log "Required Node.js version for backend: $backend_node_version"
+if [ "$backend_node_version" == "null" ]; then
+    log "Error: Required Node.js version for backend not specified in package.json."
+    exit 1
+fi
 install_node_version "$backend_node_version"
 
 frontend_node_version=$(get_required_node_version "$SEPIO_APP_DIR/front-end/package.json")
 log "Required Node.js version for frontend: $frontend_node_version"
+if [ "$frontend_node_version" == "null" ]; then
+    log "Error: Required Node.js version for frontend not specified in package.json."
+    exit 1
+fi
 install_node_version "$frontend_node_version"
-
-clone_or_update_repository "https://github.com/Floreno12/Sepio-Workspace" "$SEPIO_APP_DIR"
 
 log "Installing latest eslint-webpack-plugin..."
 npm install eslint-webpack-plugin@latest --save-dev
