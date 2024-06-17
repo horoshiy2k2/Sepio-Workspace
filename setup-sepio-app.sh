@@ -68,6 +68,28 @@ clone_or_update_repository() {
     fi
 }
 
+install_frontend_dependencies() {
+    local frontend_dir=$1
+    log "Installing frontend dependencies in $frontend_dir..."
+    cd "$frontend_dir" || { log "Error: Directory $frontend_dir not found."; exit 1; }
+    npm install
+    if [ $? -ne 0 ]; then
+        log "Error: Failed to install frontend dependencies."
+        exit 1
+    fi
+}
+
+install_backend_dependencies() {
+    local backend_dir=$1
+    log "Installing backend dependencies in $backend_dir..."
+    cd "$backend_dir" || { log "Error: Directory $backend_dir not found."; exit 1; }
+    npm install
+    if [ $? -ne 0 ]; then
+        log "Error: Failed to install backend dependencies."
+        exit 1
+    fi
+}
+
 show_header() {
     echo "====================================" | lolcat
     figlet -c Sepio Installer | lolcat
@@ -87,6 +109,9 @@ install_packages jq
 
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
 SEPIO_APP_DIR="$SCRIPT_DIR/Sepio-App"
+
+install_frontend_dependencies "$SEPIO_APP_DIR/front-end"
+install_backend_dependencies "$SEPIO_APP_DIR/backend"
 
 log "Checking for required Node.js versions from package.json files..."
 backend_node_version=$(get_required_node_version "$SEPIO_APP_DIR/backend/package.json")
