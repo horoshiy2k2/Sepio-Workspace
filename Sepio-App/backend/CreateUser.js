@@ -6,6 +6,7 @@ async function createUser() {
     host: 'localhost',
     user: 'root',
     password: 'root', // your root password
+    database: 'nodejs_login'
   });
 
   try {
