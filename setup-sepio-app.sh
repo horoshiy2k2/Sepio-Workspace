@@ -151,7 +151,11 @@ spawn mysql_secure_installation
 expect \"Enter current password for root (enter for none):\"
 send \"\r\"
 expect \"Set root password?\"
-send \"n\r\"
+send \"Y\r\"
+expect "New password:"
+send \"root\r\"
+expect "Re-enter new password:"
+send \"root\r\"
 expect \"Remove anonymous users?\"
 send \"y\r\"
 expect \"Disallow root login remotely?\"
@@ -181,6 +185,9 @@ else
     log "Error: MySQL is not running on port 3306."
     exit 1
 fi
+
+log "Creating DB User..."
+node CreateUser.js
 
 log "Installing Redis server..."
 sudo apt-get update && sudo apt-get install -y redis-server

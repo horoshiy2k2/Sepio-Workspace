@@ -2,50 +2,150 @@ const express = require('express');
 const axios = require('axios');
 const bodyParser = require('body-parser');
 const path = require('path');
-const { Sequelize } = require('sequelize');
 const cors = require('cors');
+const speakeasy = require('speakeasy');
+const qrcode = require('qrcode');
+const { PrismaClient } = require('@prisma/client');
 
-//Auth deps 
-//require('dotenv').config();
-//const authRoutes = require('./routes/authRoutes');
-
+const prisma = new PrismaClient();
 const app = express();
-//app.use(express.json());
-//app.use('/auth', authRoutes);
 
 const PORT = process.env.PORT || 3000;
-
-
 
 // Middleware
 app.use(bodyParser.json());
 app.use(cors());
 
-// MySQL User DB connection
-// const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
-//   host: process.env.DB_HOST,
-//   dialect: 'mysql',
-// });
+// Log incoming requests
+app.use((req, res, next) => {
+  console.log(`${req.method} request for ${req.url}`);
+  next();
+});
 
-// sequelize
-//   .authenticate()
-//   .then(() => {
-//     console.log('Connected to MySQL');
-//     // Create a user at the start of the application
-//     User.findOrCreate({
-//       where: { username: 'User' },
-//       defaults: { password: 'Password123' }
-//     }).then(([user, created]) => {
-//       if (created) {
-//         console.log('User created successfully.');
-//       } else {
-//         console.log('User already exists.');
-//       }
-//     }).catch(err => {
-//       console.error('Error creating user:', err);
-//     });
-//   })
-//   .catch((err) => console.error('Error connecting to MySQL:', err));
+//Sign-up
+app.post('/signup', async (req, res) => {
+  const { username, password } = req.body;
+  console.log(`Registering user: ${username}`);
+
+  try {
+    // Hash the password
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    // Create user using Prisma Client
+    const newUser = await prisma.user.create({
+      data: {
+        name: username,
+        password: hashedPassword,
+      },
+    });
+
+    console.log('User created successfully:', newUser);
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error signing up user:', error);
+    res.status(500).json({ success: false, message: 'Error signing up user' });
+  }
+});
+
+// Endpoint to check if user is authenticated and set up 2FA if not
+app.post('/authenticate', async (req, res) => {
+  const { username, password } = req.body;
+  console.log(`Authenticating user: ${username}`);
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        name: username,
+      },
+    });
+
+    if (!user || user.password !== password) {
+      console.log(`Authentication failed for user: ${username}`);
+      return res.status(401).json({ message: 'Authentication failed' });
+    }
+
+    if (user.otp_secret) {
+      // User has OTP enabled
+      console.log(`User ${username} has OTP enabled`);
+      return res.json({ otpRequired: true });
+    }
+
+    // User does not have OTP enabled, generate new OTP secret
+    console.log(`User ${username} does not have OTP enabled, generating secret`);
+    const secret = speakeasy.generateSecret({ length: 20 });
+    console.log(`Generated secret for user ${username}: ${secret.base32}`);
+    const otpauth_url = speakeasy.otpauthURL({ secret: secret.base32, label: username, issuer: 'YourApp' });
+
+    // Store secret in database
+    await prisma.user.update({
+      where: {
+        name: username,
+      },
+      data: {
+        otp_secret: secret.base32,
+      },
+    });
+
+    // Generate QR code for 2FA setup
+    qrcode.toDataURL(secret.otpauth_url, (err, data_url) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json({ message: 'QR code generation failed' });
+      }
+      console.log(`Generated QR code for user ${username}`);
+      res.json({ otpRequired: true, qrCode: data_url, secret: secret.base32 });
+    });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ message: 'Database error' });
+  }
+});
+
+// Endpoint to verify OTP token
+app.post('/verify', async (req, res) => {
+  const { username, token } = req.body;
+  console.log(`Verifying token for user: ${username}`);
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        name: username,
+      },
+    });
+
+    if (!user || !user.otp_secret) {
+      console.log(`User ${username} not set up for 2FA`);
+      return res.status(400).json({ verified: false, message: 'User not set up for 2FA' });
+    }
+
+    const verified = speakeasy.totp.verify({
+      secret: user.otp_secret,
+      encoding: 'base32',
+      token: token.trim(),
+      window: 5, // Increase the window to account for clock drift
+    });
+
+    if (verified) {
+      console.log(`Token verified for user: ${username}`);
+      res.json({ verified: true });
+    } else {
+      console.log(`Invalid token for user: ${username}`);
+      res.json({ verified: false, message: 'Invalid token' });
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ message: 'Database error' });
+  }
+});
+
+app.use(express.static(path.join(__dirname, '../front-end/build')));
+
+// Serve React app for any other routes
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../front-end/build/index.html'));
+});
 
 // Routes
 let serviceNowCredentials = {};
@@ -739,3 +839,4 @@ app.post('/receive-data', async (req, res) => {
     });
   }
 });
+

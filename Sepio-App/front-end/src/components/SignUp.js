@@ -1,3 +1,4 @@
+
 import * as React from 'react';
 import FormControl from '@mui/joy/FormControl';
 import FormLabel from '@mui/joy/FormLabel';
@@ -6,6 +7,7 @@ import Input from '@mui/joy/Input';
 import Button from '@mui/joy/Button';
 import { useNavigate } from 'react-router-dom';
 import SepioLogo from './../image/Sepio_Logo.png';
+import axios from 'axios';
 
 export default function InputSubscription({setUsername}) {
   const navigate = useNavigate();
@@ -13,14 +15,14 @@ export default function InputSubscription({setUsername}) {
     text: '',
     status: 'initial',
   });
-//
+
   const [password, setPassword] = React.useState('');
 
   const inputData = () => {
     console.log(data, password);
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     if (data.text === 'admin' && password === 'admin') {
       setData((current) => ({ ...current, status: 'loading' }));
@@ -37,7 +39,26 @@ export default function InputSubscription({setUsername}) {
     } else {
       setData((current) => ({ ...current, status: 'failure' }));
     }
+    try {
+      const response = await axios.post('/authenticate', {
+        username: data.username,
+        password: data.password
+      });
+
+      if (response.data.otpRequired) {
+        setUsername(data.username);
+        navigate('/2fa', { state: { qrCode: response.data.qrCode, username: data.username } });
+      } else {
+        setUsername(data.username);
+        navigate('/querytool');
+      }
+    } catch (error) {
+      console.error('Error logging in:', error);
+      setData({ ...data, status: 'failure' });
+    }
   };
+
+
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', background: '#778899', padding: '40px', borderRadius: '10px', maxWidth: '400px', margin: 'auto', marginTop: '100px' }}>
@@ -45,53 +66,29 @@ export default function InputSubscription({setUsername}) {
       <div className='form-token'>
         <form onSubmit={handleSubmit} id="demo">
           <FormControl>
-            <FormLabel
-              sx={(theme) => ({
-                '--FormLabel-color': theme.vars.palette.primary.plainColor,
-              })}
-            >
-              User name
-            </FormLabel>
+             <FormLabel>User name</FormLabel>
             <Input
-              sx={{ '--Input-decoratorChildHeight': '45px', marginBottom: '15px' }}
               placeholder="User name"
               type="text"
               required
-              value={data.text} onChange={(event) => setData({ text: event.target.value, status: 'initial' })}
+              value={data.username}
+              onChange={(event) => setData({ ...data, username: event.target.value, status: 'initial' })}
               error={data.status === 'failure'}
             />
-            <FormLabel
-              sx={(theme) => ({
-                '--FormLabel-color': theme.vars.palette.primary.plainColor,
-                marginTop: '5px'
-              })}
-            >
-              Password
-            </FormLabel>
+            <FormLabel>Password</FormLabel>
             <Input
-              sx={{ '--Input-decoratorChildHeight': '45px', marginBottom: '15px' }}
               placeholder="Password"
               type="password"
               required
-              value={password} onChange={(event) => setPassword(event.target.value)}
+              value={data.password}
+              onChange={(event) => setData({ ...data, password: event.target.value, status: 'initial' })}
               error={data.status === 'failure'}
             />
-            <Button
-              onClick={inputData}
-              variant="solid"
-              color="primary"
-              loading={data.status === 'loading'}
-              type="submit"
-              sx={{ borderTopLeftRadius: 5, borderBottomLeftRadius: 5, marginTop: '20px' }}
-            >
+            <Button variant="solid" color="primary" type="submit">
               Log in
             </Button>
             {data.status === 'failure' && (
-              <FormHelperText
-                sx={(theme) => ({ color: theme.vars.palette.danger[400] })}
-              >
-                Incorrect username or password.
-              </FormHelperText>
+              <FormHelperText>Error logging in. Please check your credentials.</FormHelperText>
             )}
           </FormControl>
         </form>
@@ -99,7 +96,6 @@ export default function InputSubscription({setUsername}) {
     </div>
   );
 }
-
 
 
 

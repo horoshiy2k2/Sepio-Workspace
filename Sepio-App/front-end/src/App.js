@@ -12,6 +12,7 @@ import 'primereact/resources/themes/saga-blue/theme.css';  // Theme
 import 'primereact/resources/primereact.min.css';           // Core CSS
 import 'primeicons/primeicons.css';   
 import '@coreui/coreui/dist/css/coreui.min.css'; // Import CoreUI CSS
+import FA from './components/FA';
 
 
 function App() {
@@ -27,6 +28,9 @@ function App() {
         <Route path = '/querytool/mac' element = {<MAC icon_username={icon_username}/>}/> 
         {/* <Route path = '/querytool/searchhistory' element = {<SearchHistory/>}/>   */}
         <Route path = '/querytool/settings' element = {<Settings icon_username={icon_username}/>}/>
+        <Route path='/' element={<SignUp setUsername={setUsername} />} />
+        <Route path='/2fa' element={<FA />} />
+        <Route path='/querytool' element={<RootView icon_username={icon_username} />}/> 
       </Routes>
 
     </div>
