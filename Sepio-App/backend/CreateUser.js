@@ -4,8 +4,8 @@ const mysql = require('mysql2/promise');
 async function createUser() {
   const connection = await mysql.createConnection({
     host: 'localhost',
-    user: 'root',
-    password: 'root', // your root password
+    user: 'Main_user',
+    password: 'Sepio_password', // your root password
     database: 'nodejs_login'
   });
 
