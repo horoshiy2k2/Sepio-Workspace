@@ -187,6 +187,9 @@ else
 fi
 
 log "Creating DB User..."
+cd backend 
+cd src
+cd config
 node CreateUser.js
 
 log "Installing Redis server..."
