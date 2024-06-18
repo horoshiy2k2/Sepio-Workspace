@@ -187,9 +187,7 @@ else
 fi
 
 log "Creating DB User..."
-cd backend 
-cd src
-cd config
+cd $SEPIO_APP_DIR/backend
 node CreateUser.js
 
 log "Installing Redis server..."
