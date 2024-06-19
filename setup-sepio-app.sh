@@ -131,6 +131,14 @@ install_node_version "$frontend_node_version"
 log "Installing latest eslint-webpack-plugin..."
 npm install eslint-webpack-plugin@latest --save-dev
 
+log "Generating Prisma Client..."
+npx prisma generate
+if [ $? -ne 0 ]; then
+    log "Error: Failed to generate Prisma Client."
+    exit 1
+fi
+log "Prisma Client generated successfully."
+
 log "Granting privilages for Updater and scheduling autoupdates..."
 schedule_updater
 cd "$SCRIPT_DIR" || { log "Error: Directory $SCRIPT_DIR not found."; exit 1; }
