@@ -3,6 +3,15 @@ log() {
     echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" | lolcat
 }
 
+execute_mysql_command() {
+    local query="$1"
+    mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "$query"
+    if [ $? -ne 0 ]; then
+        log "Error executing MySQL query: $query"
+        exit 1
+    fi
+}
+
 install_packages() {
     local package=$1
     if ! command -v "$package" &> /dev/null; then
@@ -194,9 +203,30 @@ else
     exit 1
 fi
 
-log "Creating DB User..."
-cd $SEPIO_APP_DIR/backend
-node CreateUser.js
+#log "Creating DB User..."
+#cd $SEPIO_APP_DIR/backend
+#node CreateUser.js
+
+if ! command -v mysql &> /dev/null; then
+    log "MySQL client is not installed. Installing..."
+    sudo apt-get update && sudo apt-get install -y mysql-client
+    if [ $? -ne 0 ]; then
+        log "Error: Failed to install MySQL client."
+        exit 1
+    fi
+fi
+
+MYSQL_ROOT_PASSWORD="root"
+
+execute_mysql_command "CREATE DATABASE IF NOT EXISTS nodejs_login;"
+
+execute_mysql_command "ALTER USER 'Main_user'@'localhost' IDENTIFIED WITH mysql_native_password BY 'Sepio_password';"
+
+execute_mysql_command "GRANT ALL PRIVILEGES ON nodejs_login.* TO 'Main_user'@'localhost';"
+
+execute_mysql_command "FLUSH PRIVILEGES;"
+
+log "Database created, user modified, and privileges granted successfully."
 
 log "Installing Redis server..."
 sudo apt-get update && sudo apt-get install -y redis-server
