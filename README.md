@@ -1,7 +1,7 @@
 <<<<<<< HEAD
 PLEASE ENSURE THAT you are running instalation file on Linux Ubuntu 22.04.4. We have no guaranties of compability with other Linux/Ubuntu Linux versions.
 
-To successfully install Sepio QueryTool, please follow these steps in your Linux Ubuntu terminal:
+To successfully installing Sepio QueryTool, please follow these steps in your Linux Ubuntu terminal:
 
 Make the installer script executable by running the following command:
 
