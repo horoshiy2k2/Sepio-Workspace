@@ -7,9 +7,10 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model User {
+model user {
   id         Int      @id @default(autoincrement())
   name       String   @unique
   password   String
   otp_secret String
+  otp_verified boolean
 }
