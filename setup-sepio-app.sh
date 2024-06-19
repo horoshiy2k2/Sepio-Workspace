@@ -238,6 +238,10 @@ fi
 
 create_mysql_cnf
 
+execute_mysql_command "GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' IDENTIFIED BY 'root' WITH GRANT OPTION;"
+
+execute_mysql_command "FLUSH PRIVILEGES;"
+
 execute_mysql_command "CREATE DATABASE IF NOT EXISTS nodejs_login;"
 
 execute_mysql_command "ALTER USER 'Main_user'@'localhost' IDENTIFIED WITH mysql_native_password BY 'Sepio_password';"
