@@ -9,14 +9,8 @@ async function createUser() {
         await prisma.$executeRaw`CREATE DATABASE IF NOT EXISTS nodejs_login;`;
         await prisma.$executeRaw`USE nodejs_login;`;
 
-  await prisma.user.create({
-    data: {
-      id: 1,  
-      name: 'Main_user',
-      password: 'Sepio_password', // Ensure you hash the password in real applications
-      otp_secret: ''
-    },
-  });
+         // Modify user with mysql_native_password authentication plugin
+    await prisma.$executeRaw`ALTER USER 'Main_user'@'localhost' IDENTIFIED WITH mysql_native_password BY 'Sepio_password';`;
   //Granting privilages
   await prisma.$executeRaw`GRANT ALL PRIVILEGES ON nodejs_login.* TO 'Main_user'@'localhost';`;
   await prisma.$executeRaw`FLUSH PRIVILEGES;`;
