@@ -12,5 +12,5 @@ model user {
   name       String   @unique
   password   String
   otp_secret String
-  otp_verified boolean
+  otp_verified Boolean
 }
