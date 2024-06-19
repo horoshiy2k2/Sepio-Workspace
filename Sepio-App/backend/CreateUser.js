@@ -1,24 +1,31 @@
-
-const mysql = require('mysql2/promise');
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 
 async function createUser() {
-  const connection = await mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'root'
-  });
+    try{
+      //Creating DB
+        await prisma.$executeRaw`CREATE DATABASE IF NOT EXISTS nodejs_login;`;
+        await prisma.$executeRaw`USE nodejs_login;`;
 
-  try {
-    await connection.execute('CREATE DATABASE IF NOT EXISTS nodejs_login;');
-    await connection.execute('CREATE USER IF NOT EXISTS \'Main_user\'@\'localhost\' IDENTIFIED BY \'Sepio_password\';');
-    await connection.execute('GRANT ALL PRIVILEGES ON nodejs_login.* TO \'Main_user\'@\'localhost\';');
-    await connection.execute('FLUSH PRIVILEGES;');
-    console.log('User created and privileges granted successfully.');
-  } catch (err) {
-    console.error('Error creating user:', err);
-  } finally {
-    await connection.end();
-  }
+  await prisma.user.create({
+    data: {
+      id: 1,  
+      name: 'Main_user',
+      password: 'Sepio_password', // Ensure you hash the password in real applications
+      otp_secret: ''
+    },
+  });
+  //Granting privilages
+  await prisma.$executeRaw`GRANT ALL PRIVILEGES ON nodejs_login.* TO 'Main_user'@'localhost';`;
+  await prisma.$executeRaw`FLUSH PRIVILEGES;`;
+
+  console.log('User created and privileges granted successfully.');
+} catch (e) {
+  console.error('Error creating user:', e);
+  process.exit(1);
+} finally {
+  await prisma.$disconnect();
+}
 }
 
 createUser().catch(console.error);
