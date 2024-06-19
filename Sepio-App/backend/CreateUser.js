@@ -3,6 +3,8 @@ const prisma = new PrismaClient();
 
 async function createUser() {
     try{
+      //Ensure the config was right
+      await prisma.$connect();
       //Creating DB
         await prisma.$executeRaw`CREATE DATABASE IF NOT EXISTS nodejs_login;`;
         await prisma.$executeRaw`USE nodejs_login;`;
