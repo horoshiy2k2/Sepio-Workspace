@@ -9,7 +9,7 @@ create_mysql_cnf() {
         cat <<EOF > "$mysql_cnf"
 [client]
 user=root
-password=your_root_password
+password=root
 EOF
         # Secure the file
         chmod 600 "$mysql_cnf"
